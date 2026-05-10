@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import ImageReveal from '../components/ImageReveal';
-import CustomCursor from '../components/CustomCursor';
+import Button from '../components/Button';
 import Reveal from '../components/Reveal';
 import { supabase } from '../lib/supabase';
 import { Project } from '../types';
@@ -62,170 +62,184 @@ export default function CaseStudy() {
   if (!project) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-bg gap-8">
       <div className="text-4xl font-display uppercase">Project not found</div>
-      <Link to="/work" className="font-label border-b border-fg pb-1">Back to Work</Link>
+      <Button to="/work">Back to Work</Button>
     </div>
   );
 
   return (
-    <div className="w-full pb-20 bg-bg overflow-x-hidden">
-      <CustomCursor />
-      {/* Hero */}
-      <section className="relative min-h-[80vh] w-full overflow-hidden flex flex-col items-center justify-center pt-32 text-center">
-        <div className="w-full px-5 md:px-11">
-          <Reveal type="text" className="text-5xl md:text-[6vw] font-display font-medium leading-[0.9] mb-12 uppercase tracking-tight text-center">
-            {project.title}
-          </Reveal>
-          <Reveal type="pixel">
-            <div className="w-full aspect-[21/9] overflow-hidden rounded-sm bg-muted/10 relative group">
-              {/* Primary Video takes precedence if hybrid, but we use isVideo logic for flexibility */}
-              {project.video ? (
-                <video 
-                  src={project.video}
-                  autoPlay muted loop playsInline
-                  className="w-full h-full object-cover hover:scale-105 transition-all duration-1000 scale-105 group-hover:scale-100"
-                />
-              ) : project.image ? (
-                isVideo(project.image) ? (
-                  <video 
-                    src={project.image}
-                    autoPlay muted loop playsInline
-                    className="w-full h-full object-cover hover:scale-105 transition-all duration-1000 scale-105 group-hover:scale-100"
-                  />
-                ) : (
-                  <ImageReveal
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full hover:scale-105 transition-all duration-1000 scale-105 group-hover:scale-100"
-                  />
-                )
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted uppercase tracking-widest text-xs">No Showcase Media</div>
-              )}
+    <div className="w-full pb-20 bg-white overflow-x-hidden text-black font-sans">
+      
+      {/* 1. CINEMATIC FULL-WIDTH HEADER */}
+      <section className="relative h-[85vh] md:h-[95vh] w-full overflow-hidden bg-black group">
+        {/* Background Media */}
+        <div className="absolute inset-0 z-0">
+          {project.video || (project.image && isVideo(project.image)) ? (
+            <video 
+              src={project.video || project.image}
+              autoPlay muted loop playsInline
+              className="w-full h-full object-cover opacity-60"
+            />
+          ) : project.image ? (
+            <img 
+              src={project.image} 
+              alt={project.title}
+              className="w-full h-full object-cover opacity-60"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="w-full h-full bg-neutral-900" />
+          )}
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+        </div>
+
+        {/* Content Overlay */}
+        <div className="relative z-10 h-full w-full px-6 md:px-[8%] flex flex-col justify-end pb-12 md:pb-20">
+          {/* Top Metadata Tags */}
+          <div className="absolute top-12 left-6 right-6 md:left-[8%] md:right-[8%] flex flex-wrap items-center justify-between gap-4">
+            <Reveal type="fade" className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-md border border-white/10 text-white">
+              <span className="w-3.5 h-3.5 flex items-center justify-center bg-[#FF4D00] rounded-[2px]">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v10z"/></svg>
+              </span>
+              <span className="text-[9px] font-bold uppercase tracking-widest">{project.year || '2026'} Release</span>
+            </Reveal>
+
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              {[
+                { label: 'Client', value: project.client },
+                { label: 'Role', value: project.role || 'Design Lead' },
+                { label: 'Services', value: project.category }
+              ].map((item, idx) => item.value && (
+                <div key={item.label}>
+                  <Reveal type="fade" delay={0.1 * (idx + 1)}>
+                    <div className="bg-white/10 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 text-white">
+                      <span className="text-[7px] uppercase tracking-tighter opacity-50">{item.label}</span>
+                      <span className="text-[9px] font-bold tracking-widest">{item.value.split(',')[0].trim()}</span>
+                    </div>
+                  </Reveal>
+                </div>
+              ))}
             </div>
-          </Reveal>
+          </div>
+
+          <div className="w-full">
+            <Reveal type="text" className="text-4xl md:text-[5.5vw] font-display font-medium text-white tracking-tighter leading-[1.1] mb-6">
+              {project.title}
+            </Reveal>
+
+            <Reveal type="fade" delay={0.3} className="max-w-2xl">
+              <p className="text-white/70 text-sm md:text-xl font-medium leading-[1.6] tracking-tight">
+                {project.overview}
+              </p>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-12 right-6 md:right-16 text-white/40 animate-bounce">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
         </div>
       </section>
 
-      {/* Info Grid */}
-      <section className="px-5 md:px-11 py-8 lg:py-20 w-full grid grid-cols-2 md:grid-cols-4 gap-12 border-b border-border text-center lg:text-left">
-        <Reveal type="fade" className="flex flex-col gap-2">
-          <span className="font-label">Client</span>
-          <span className="text-sm font-display tracking-tight uppercase font-medium">{project.client || "TBC"}</span>
-        </Reveal>
-        <Reveal type="fade" delay={0.1} className="flex flex-col gap-2">
-          <span className="font-label">Role</span>
-          <span className="text-sm font-display tracking-tight uppercase font-medium">{project.role || "Lead Designer"}</span>
-        </Reveal>
-        <Reveal type="fade" delay={0.2} className="flex flex-col gap-2">
-          <span className="font-label">Year</span>
-          <span className="text-sm font-display tracking-tight uppercase font-medium">{project.year || "2026"}</span>
-        </Reveal>
-        <Reveal type="fade" delay={0.3} className="flex flex-col gap-2">
-          <span className="font-label">Deliverables</span>
-          <span className="text-sm font-display tracking-tight uppercase font-medium">{project.category || "Digital Experience"}</span>
-        </Reveal>
-      </section>
+      {/* 3. CASE STUDY CONTENT */}
+      <section className="py-8 md:py-16 bg-white overflow-hidden">
+        <div className="px-6 md:px-[8%] space-y-10 md:space-y-24">
+          
+          {/* Lead Intro / Overview - Tightened further */}
+          <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start border-b border-black/5 pb-8 md:pb-12">
+            <div className="w-full md:w-1/4">
+              <Reveal type="fade" className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 bg-[#FF4D00] rounded-[2px]" />
+                <span className="text-[10px] font-bold text-black border-b border-black pb-0.5 tracking-widest uppercase">The Directive</span>
+              </Reveal>
+            </div>
+            <div className="w-full md:w-3/4">
+              <Reveal type="text" className="text-xl md:text-2xl font-display font-medium text-black/80 leading-[1.4] tracking-tight max-w-4xl">
+                {project.longDescription || "We defined a new digital standard for the project, focusing on a minimal yet high-impact visual narrative that prioritizes emotional connection and functional clarity."}
+              </Reveal>
+            </div>
+          </div>
 
-      {/* Multi-Section Case Study Details */}
-      <section className="pt-8 pb-4 lg:pt-40 lg:pb-20 bg-bg">
-        <div className="w-full px-5 md:px-11 space-y-12 lg:space-y-40">
+          {/* Staggered Sections - Even tighter vertical gaps */}
           {[
             { 
-              title: "PROJECT OVERVIEW", 
-              content: project.overview, 
-              image: project.image_overview,
-              number: "01"
-            },
-            { 
-              title: "THE CHALLENGE", 
+              title: "The Challenge", 
               content: project.challenge, 
-              image: project.image_challenge,
+              image: project.image_challenge || project.image_overview,
               number: "02"
             },
             { 
-              title: "OUR APPROACH", 
+              title: "Our Approach", 
               content: project.approach, 
               image: project.image_approach,
               number: "03"
             },
             { 
-              title: "EXECUTION", 
+              title: "Execution", 
               content: project.execution, 
               image: project.image_execution,
               number: "04"
             },
             { 
-              title: "THE OUTCOME", 
+              title: "Outcome", 
               content: project.outcome, 
               image: project.image_outcome,
               number: "05"
             }
-          ].map((section, idx) => (section.content && (
-            <div key={idx} className="space-y-16 flex flex-col items-center lg:items-start text-center lg:text-left">
-              <div className="w-full flex flex-col items-center lg:items-start">
-                <div className="w-full md:w-[85%] lg:w-[70%] space-y-10 flex flex-col items-center lg:items-start">
-                  <Reveal type="fade">
-                    <div className="flex items-center gap-4">
-                      <span className="text-[10px] font-sans tracking-[0.4em] text-muted uppercase">Section {section.number}</span>
-                      <div className="w-8 h-[1px] bg-border opacity-30" />
-                      <span className="text-[10px] font-serif italic tracking-[0.3em] text-fg opacity-60 uppercase">{section.title}</span>
-                    </div>
-                  </Reveal>
-                  <Reveal type="text" className="text-xl md:text-3xl font-display font-medium leading-[1.2] tracking-tight">
-                    {section.content}
-                  </Reveal>
-                </div>
-                {/* Empty column for balance if no image besides, but we want image below usually or staggered */}
-              </div>
-              
+          ].map((section, idx) => section.content && (
+            <div key={idx} className="space-y-4 md:space-y-8">
+              {/* Media First */}
               {section.image && (
                 <Reveal type="pixel" className="w-full">
-                  <div className="aspect-video md:aspect-[21/9] overflow-hidden rounded-[2px] bg-muted/5 border border-border/10">
+                  <div className="aspect-[16/9] overflow-hidden rounded-[14px] md:rounded-[32px] bg-[#f4f4f4]">
                     {isVideo(section.image) ? (
                       <video 
                         src={section.image} 
                         autoPlay muted loop playsInline
-                        className="w-full h-full object-cover hover:scale-[1.03] transition-all duration-1000"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       <img 
                         src={section.image} 
                         alt={section.title}
-                        className="w-full h-full object-cover hover:scale-[1.03] transition-all duration-1000"
+                        className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
                       />
                     )}
                   </div>
                 </Reveal>
               )}
+
+              {/* Text Second - Closer to image */}
+              <div className="w-full space-y-2 md:space-y-3">
+                <Reveal type="fade">
+                  <span className="text-[8px] font-bold text-[#FF4D00] capitalize tracking-[0.2em] font-sans">Level {section.number} // {section.title}</span>
+                </Reveal>
+                <Reveal type="text" className="text-lg md:text-xl font-display font-medium text-black leading-[1.5] tracking-tight max-w-4xl">
+                  {section.content}
+                </Reveal>
+              </div>
             </div>
-          )))}
-
-          {/* Fallback Video if exist and no images */}
-          {project.video && !project.image_overview && (
-            <Reveal type="pixel" className="aspect-video w-full overflow-hidden rounded-sm bg-muted/10">
-              <video
-                src={project.video}
-                autoPlay muted loop playsInline
-                className="w-full h-full object-cover"
-              />
-            </Reveal>
-          )}
-
+          ))}
 
         </div>
       </section>
 
-      {/* Next Project */}
+      {/* 4. NEXT PROJECT */}
       {nextProject && (
-        <section className="mt-20 border-t border-border pt-20 px-5 md:px-11 text-center">
+        <section className="py-24 bg-[#f4f4f4] rounded-[40px] mx-6 md:mx-[8%] flex flex-col items-center text-center">
           <Reveal type="fade">
-            <span className="font-label mb-8 block !tracking-[0.5em]">Next Project</span>
+            <span className="text-[8px] font-bold text-black/30 capitalize tracking-[0.3em] mb-10 block">Next Story</span>
           </Reveal>
-          <Link to={`/work/${nextProject.slug}`} className="group inline-block">
-            <Reveal type="text" className="text-5xl md:text-[6.5vw] font-display font-medium leading-[0.9] hover:font-serif hover:italic transition-all duration-500 uppercase tracking-tight">
+          <Link to={`/work/${nextProject.slug}`} className="group relative overflow-hidden">
+            <Reveal type="text" className="text-4xl md:text-[5.5vw] font-display font-medium text-black tracking-tighter leading-[1.1] group-hover:italic transition-all duration-500">
               {nextProject.title}
             </Reveal>
+            <div className="mt-6 flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+               <div className="w-12 h-12 bg-[#FF4D00] rounded-full flex items-center justify-center text-white rotate-45">
+                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+               </div>
+            </div>
           </Link>
         </section>
       )}

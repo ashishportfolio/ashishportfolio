@@ -41,6 +41,12 @@ export interface AboutContent {
   id: string;
   image: string;
   connect_image?: string;
+  profile_section_image?: string;
+  profile_title?: string;
+  profile_subtitle_1?: string;
+  profile_desc_1?: string;
+  profile_subtitle_2?: string;
+  profile_desc_2?: string;
 }
 
 export interface ClientLogo {
@@ -58,4 +64,34 @@ export interface Service {
 export interface SiteContent {
   key: string;
   value: string;
+}
+
+export interface AvailabilitySlot {
+  id: string;
+  day_of_week?: number; // 0-6 (Sunday-Saturday)
+  date?: string; // "YYYY-MM-DD" for specific dates
+  start_time: string; // "09:00"
+  end_time: string; // "10:00"
+  is_active: boolean;
+}
+
+export interface Booking {
+  id: string;
+  date: string; // "YYYY-MM-DD"
+  time_slot: string; // "09:00"
+  name: string;
+  email: string;
+  phone: string;
+  message?: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  created_at?: string;
+}
+
+export interface Inquiry {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  created_at?: string;
 }

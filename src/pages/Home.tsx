@@ -1,22 +1,94 @@
 import { useEffect, useState, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { SERVICES } from '../data/projects';
 import Hero from '../components/Hero';
-import CustomCursor from '../components/CustomCursor';
+import Button from '../components/Button';
+import ProjectCard from '../components/ProjectCard';
 import Reveal from '../components/Reveal';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { supabase } from '../lib/supabase';
 import { Project, ArchiveMedia, AboutContent } from '../types';
 import { isVideo } from '../lib/utils';
+import { useBooking } from '../context/BookingContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
+interface ServiceProps {
+  title: string;
+  items: string[];
+}
+
+interface ServiceCardProps {
+  service: ServiceProps;
+  index: number;
+  key?: string;
+}
+
+function ServiceCard({ service, index }: ServiceCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Descriptions based on service titles
+  const getDescription = (title: string) => {
+    switch(title) {
+      case 'Brand & Identity': return "Crafting distinctive visual languages and strategic positioning that defines brands and resonates with audiences globally. We build identities that stick.";
+      case 'Art Direction': return "Elevating visual narratives through cinematic direction, conceptual storytelling, and high-impact visual design systems for digital and print.";
+      case 'AI Production': return "Pushing creative boundaries with cutting-edge AI technologies, generative art, and forward-thinking digital workflows that redefine production.";
+      default: return "Transforming concepts into captivating visual journeys with a focus on immersive storytelling and cultural impact.";
+    }
+  };
+
+  return (
+    <div className="relative p-7 md:p-10 rounded-[20px] border border-white/10 bg-[#0f0f0f] overflow-hidden group transition-all duration-500 hover:border-white/20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-6">
+        <h3 className="text-xl md:text-2xl font-display capitalize tracking-tighter">{service.title}</h3>
+        
+        <button 
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full lg:w-auto flex items-center justify-between lg:justify-center gap-4 bg-transparent border border-white/20 hover:border-white px-6 py-2.5 lg:py-2 rounded-full transition-all duration-300 group/btn"
+        >
+          <span className="text-[11px] capitalize font-bold tracking-widest">{isExpanded ? 'Hide Details' : 'View Services'}</span>
+          <div className={`w-4 h-4 rounded-full bg-white/10 flex items-center justify-center transition-transform duration-500 ${isExpanded ? 'rotate-180' : ''}`}>
+             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+             </svg>
+          </div>
+        </button>
+      </div>
+
+      <p className="text-xs md:text-sm opacity-50 font-sans font-medium leading-[1.6] max-w-2xl mb-0">
+        {getDescription(service.title)}
+      </p>
+
+      <motion.div
+        initial={false}
+        animate={{ height: isExpanded ? 'auto' : 0, opacity: isExpanded ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="overflow-hidden"
+      >
+        <div className="pt-8 mt-8 border-t border-white/5">
+           <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-4">
+              {service.items.map((item, idx) => (
+                <div key={item} className="flex items-center gap-3 group/item">
+                  <span className="text-[8px] opacity-20 font-bold">0{idx + 1}</span>
+                  <span className="text-[10px] md:text-[11px] capitalize tracking-wide opacity-60 group-hover/item:opacity-100 transition-opacity font-bold">{item}</span>
+                </div>
+              ))}
+           </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function Home() {
+  const { openBookingModal } = useBooking();
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const [archiveMedia, setArchiveMedia] = useState<ArchiveMedia[]>([]);
   const [clientLogos, setClientLogos] = useState<any[]>([]);
   const [aboutData, setAboutData] = useState<AboutContent | null>(null);
+  const [siteContent, setSiteContent] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -26,11 +98,18 @@ export default function Home() {
         const { data: aData } = await supabase.from('archive_media').select('*').order('order_index', { ascending: true });
         const { data: lData } = await supabase.from('client_logos').select('*').order('order_index', { ascending: true });
         const { data: abData } = await supabase.from('about_content').select('*').single();
+        const { data: sData } = await supabase.from('site_content').select('*');
 
         setFeaturedProjects(pData || []);
         setArchiveMedia(aData || []);
         setClientLogos(lData || []);
         setAboutData(abData || null);
+        
+        if (sData) {
+          const contentMap: Record<string, string> = {};
+          sData.forEach((item: any) => contentMap[item.key] = item.value);
+          setSiteContent(contentMap);
+        }
       } catch (err) {
         console.error('Fetch error:', err);
       } finally {
@@ -81,179 +160,190 @@ export default function Home() {
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-bg">
-        <div className="font-display text-2xl md:text-5xl animate-pulse tracking-tighter uppercase font-medium">AshishGuptaa / Loading</div>
+        <div className="font-display text-xl md:text-3xl animate-pulse tracking-tighter normal-case font-medium">Ashish Gupta &nbsp; / &nbsp; Loading</div>
       </div>
     );
   }
 
   return (
     <div className="w-full bg-bg overflow-x-hidden selection:bg-fg selection:text-bg">
-      <CustomCursor />
       <Hero />
 
-      {/* 1. MISSION / ABOUT BRIEF */}
-      <section className="relative z-10 py-16 lg:py-40 px-5 md:px-11 border-t border-border bg-bg">
-        <div className="w-full">
-          <Reveal multiplier={1.8} type="fade" className="flex items-center gap-4 mb-16">
-            <span className="text-[10px] font-sans tracking-[0.4em] text-muted uppercase">Art Direction / Digital Design</span>
-            <div className="flex-1 h-[1px] bg-border" />
+      {/* 1. MISSION / ABOUT BRIEF - UPDATED TO MATCH DESIGN */}
+      <section className="relative z-10 py-10 lg:py-14 px-6 md:px-[8%] bg-bg overflow-hidden">
+        <div className="w-full relative z-10">
+          <Reveal multiplier={1.8} type="text" className="w-full block text-xl md:text-[3.04vw] font-display font-medium leading-[1.1] tracking-tighter mb-8 lg:mb-12">
+            {siteContent['profile_title'] || aboutData?.profile_title || "A brand designer and art director based in Mumbai, passionate about creating immersive visual experiences. From crafting realistic brand identities to dynamic animations and interactions.®"}
           </Reveal>
           
-          <div className="w-full">
-            <Reveal multiplier={1.8} type="glitch" className="text-4xl md:text-[5vw] font-display font-medium leading-[0.85] uppercase tracking-tight">
-              Crafting clear, <br /> high-impact <span className="font-serif italic text-muted opacity-40">digital</span> <br /> experiences for <br /> ambitious brands.
+          <div className="mb-10 lg:mb-16 flex flex-col md:flex-row items-center justify-between gap-12">
+            <Reveal multiplier={1.8} type="fade">
+              <Button onClick={openBookingModal}>Book A Call</Button>
             </Reveal>
-          </div>
 
-          <div className="mt-20 flex flex-col md:flex-row justify-between items-end gap-12">
-            <Reveal multiplier={1.8} type="fade" delay={0.4} className="max-w-2xl">
-              <p className="text-xl md:text-2xl leading-snug text-muted font-display font-medium">
-                I blend strategy, design, and systems thinking to build products that scale — and stand out. Every pixel is intentional, every interaction is a narrative.
-              </p>
-            </Reveal>
-            <Reveal multiplier={1.8} type="fade" delay={0.6}>
-              <Link to="/about" className="group flex items-center gap-4">
-                <span className="text-[10px] uppercase tracking-[0.3em] font-bold">The Profile</span>
-                <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center group-hover:bg-fg group-hover:border-fg transition-all duration-500">
-                   <div className="w-2 h-2 bg-fg rounded-full group-hover:bg-bg transition-colors" />
-                </div>
-              </Link>
-            </Reveal>
+            {/* Small image on the right side logic */}
+            {(siteContent['profile_section_image'] || aboutData?.profile_section_image) && (
+              <Reveal multiplier={1.8} type="image" className="w-[10vw] min-w-[120px] aspect-video">
+                <img 
+                  src={siteContent['profile_section_image'] || aboutData?.profile_section_image} 
+                  className="w-full h-full object-cover rounded-sm grayscale hover:grayscale-0 transition-all duration-1000" 
+                  alt="Profile Accent"
+                  referrerPolicy="no-referrer"
+                />
+              </Reveal>
+            )}
           </div>
         </div>
+
+        {/* Decorative subtle circle accent to match the mockup background */}
+        <div className="absolute -left-[10%] top-[40%] w-[40vw] h-[40vw] rounded-full bg-slate-100 opacity-30 blur-3xl -z-10 pointer-events-none" />
       </section>
 
-      {/* 2. SERVICES GRID */}
-      <section className="relative z-10 py-16 lg:py-40 px-5 md:px-11 bg-fg text-bg overflow-hidden translate-y-[-1px]">
-        <div className="w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20 mb-32 items-end">
-            <Reveal multiplier={1.8} type="glitch" className="text-4xl md:text-[5.5vw] font-display font-medium leading-[0.82] uppercase tracking-tight">
-              TURNING VISION <br /> INTO <span className="font-serif italic text-muted opacity-40">PRODUCT.</span>
-            </Reveal>
-            <Reveal multiplier={1.8} type="fade" className="max-w-xs md:pb-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] opacity-60 leading-relaxed font-bold">
-                Partnering with creative founders to launch digital entities that disrupt categories and define cultures.
-              </p>
-            </Reveal>
-          </div>
+      {/* 2. SERVICES GRID - UPDATED TO NEW DESIGN */}
+      <section className="relative z-10 py-10 lg:py-14 px-6 md:px-[8%] bg-fg text-bg overflow-hidden translate-y-[-1px]">
+        {/* Futuristic Background Animation - Updated for high visibility */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-100">
+          <motion.div 
+            animate={{
+              x: [0, 100, -100, 0],
+              y: [0, -60, 60, 0],
+              scale: [1, 1.4, 0.8, 1],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="absolute top-[-30%] left-[-20%] w-[120%] h-[120%] bg-[#00A3FF] blur-[200px] rounded-full opacity-50"
+          />
+          <motion.div 
+            animate={{
+              x: [0, -120, 120, 0],
+              y: [0, 80, -80, 0],
+              scale: [1, 0.7, 1.3, 1],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="absolute bottom-[-40%] right-[-20%] w-[130%] h-[130%] bg-[#FF7A00] blur-[250px] rounded-full opacity-40"
+          />
+          <motion.div 
+            animate={{
+              opacity: [0.15, 0.4, 0.15]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff15_1px,transparent_1px),linear-gradient(to_bottom,#ffffff15_1px,transparent_1px)] bg-[size:50px_50px]"
+          />
+          {/* Third accent blob */}
+          <motion.div 
+            animate={{
+              opacity: [0.1, 0.3, 0.1],
+              scale: [1, 1.2, 1],
+              x: [0, 50, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-[#FF00D6] blur-[100px] rounded-full opacity-20"
+          />
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-24">
-            {SERVICES.map((service, i) => (
-              <div key={service.title} className="space-y-10 group">
-                <Reveal multiplier={1.8} type="fade" delay={i * 0.1}>
-                  <div className="flex flex-col gap-4">
-                    <span className="text-[10px] tracking-[0.4em] opacity-40 uppercase font-bold">Core 0{i+1} — {service.title}</span>
-                    <div className="h-[1px] bg-bg/20 w-full group-hover:bg-bg transition-all duration-500" />
-                  </div>
-                  <ul className="space-y-4 mt-8">
-                    {service.items.map((item) => (
-                      <li key={item} className="text-2xl md:text-3xl font-display font-medium uppercase tracking-tighter hover:pl-4 transition-all duration-500 cursor-default opacity-80 hover:opacity-100">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+        <div className="w-full relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-6 min-h-[60vh]">
+            {/* Left Content */}
+            <div className="lg:col-span-4 flex flex-col justify-between">
+              <div>
+                <Reveal multiplier={1.5} type="text" className="text-2xl md:text-[3.2vw] font-display font-medium leading-[1.1] tracking-tighter mb-6">
+                  Defining Visual<br />
+                  Identities & Legacies.
+                </Reveal>
+                <Reveal multiplier={1.5} type="fade" delay={0.2}>
+                   <p className="text-xs md:text-sm text-bg font-sans font-normal max-w-sm opacity-90 leading-[1.6]">
+                     As an art director and brand designer, I help visionary founders shape their visual narrative. I bridge the gap between conceptual storytelling and strategic design to build brands that leave a lasting impact.
+                   </p>
                 </Reveal>
               </div>
-            ))}
+
+              <div className="mt-16">
+                <Reveal multiplier={1.5} type="fade" delay={0.4}>
+                  <Button to="/services">
+                    Explore Services
+                  </Button>
+                </Reveal>
+              </div>
+            </div>
+
+            {/* Right Cards Stack */}
+            <div className="lg:col-span-7 lg:col-start-6 flex flex-col gap-5">
+              {SERVICES.map((service, i) => (
+                <ServiceCard key={service.title} service={service} index={i} />
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* 3. SELECTED WORKS */}
-      <section className="featured-works-section relative z-10 py-16 lg:py-40 border-t border-border bg-bg">
+      <section className="featured-works-section relative z-10 py-10 lg:py-14 bg-bg">
         <div className="absolute inset-0 bg-fg pointer-events-none opacity-0 z-0" id="work-bg-flash" />
         
-        <div className="w-full px-5 md:px-11 mb-12 lg:mb-32 flex justify-between items-end relative z-10">
-          <div className="max-w-4xl">
-            <Reveal multiplier={2.34} type="fade" className="mb-6 block">
-              <span className="text-[10px] uppercase tracking-[0.4em] text-muted block">Case Studies / Volume 01</span>
+        <div className="w-full px-6 md:px-[8%] mb-8 lg:mb-12 flex justify-between items-end relative z-10">
+          <div className="w-full">
+            <Reveal multiplier={2.34} type="fade" className="mb-3 block">
+              <span className="text-[9px] capitalize tracking-[0.2em] text-muted block">Case Studies / Volume 01</span>
             </Reveal>
-            <Reveal multiplier={2.34} type="text" className="leading-[0.8] text-6xl md:text-[7vw] font-display font-medium uppercase tracking-tighter">
-              FEATURED <span className="font-serif italic font-normal text-muted opacity-40">PROJECTS</span>
+            <Reveal multiplier={2.34} type="text" className="text-2xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-[1.1]">
+              Featured Projects
             </Reveal>
           </div>
         </div>
         
-        <div className="flex flex-col gap-20 relative z-10">
-          {featuredProjects.map((project) => (
-            <div key={project.id} className="project-scene relative px-5 md:px-11">
-               <div className="w-full">
-                 <Reveal multiplier={2.34} type="image" className="w-full h-full">
-                   <Link 
-                     to={`/work/${project.slug}`}
-                     className="relative group block overflow-hidden w-full aspect-[16/11] md:aspect-[21/11] rounded-[2px] bg-muted/10 border border-border/5"
-                      data-project-id={project.id}
-                      data-project-video={project.hover_video || project.video}
-                   >
-                      {/* Main Media (Hybrid Image or Video) */}
-                      <div className="w-full h-full transition-all duration-500">
-                         {isVideo(project.image) ? (
-                           <video src={project.image} autoPlay muted loop playsInline className="w-full h-full object-cover brightness-90 group-hover:brightness-105 group-hover:scale-[1.03] transition-all duration-1000 ease-out" />
-                         ) : (
-                           <img src={project.image} alt={project.title} className="w-full h-full object-cover brightness-90 group-hover:brightness-105 group-hover:scale-[1.03] transition-all duration-1000 ease-out" referrerPolicy="no-referrer" />
-                         )}
-                      </div>
-
-
-                     
-                     <div className="absolute inset-8 flex justify-between items-end opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-                       <span className="text-[10px] uppercase font-bold tracking-[0.3em] bg-bg px-4 py-2 text-fg">View Identity</span>
-                       <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-white mix-blend-difference">IND / {project.year}</span>
-                     </div>
-                   </Link>
-                 </Reveal>
-
-                 <div className="mt-12 flex flex-col md:flex-row justify-between items-start gap-12 w-full">
-                   <div className="max-w-2xl">
-                     <Reveal multiplier={2.34} type="text" className="text-3xl md:text-5xl font-display font-medium uppercase tracking-tighter mb-4">{project.title}</Reveal>
-                     <Reveal multiplier={2.34} type="fade" delay={0.2}>
-                       <p className="text-muted text-[10px] md:text-xs leading-relaxed max-w-xl uppercase tracking-[0.2em] font-medium">
-                         {project.overview || project.description}
-                       </p>
-                     </Reveal>
-                   </div>
-                   <div className="pt-2 flex flex-wrap gap-3">
-                     <Reveal multiplier={2.34} type="fade" delay={0.3} className="flex gap-2 flex-wrap">
-                       {project.category.split(',').map(tag => (
-                         <span key={tag} className="px-4 py-1.5 border border-border text-[9px] uppercase font-bold tracking-widest text-muted rounded-full">
-                           {tag.trim()}
-                         </span>
-                       ))}
-                     </Reveal>
-                   </div>
-                 </div>
-               </div>
+        <div className="flex flex-col gap-6 md:gap-10 relative z-10 px-6 md:px-[8%]">
+          {featuredProjects.map((project, i) => (
+            <div key={project.id} className="project-scene relative">
+              <ProjectCard project={project} index={i} />
             </div>
           ))}
         </div>
       </section>
 
+
+                     
+
+
+
+
+
       {/* ARCHIVE BENTO LOOP SECTION */}
       {archiveMedia.length > 0 && (
-        <section className="relative z-20 bg-bg border-t border-border pt-8 lg:pt-20 pb-16 lg:pb-40 overflow-hidden text-center lg:text-left">
-          <div className="w-full px-5 md:px-11 mb-8 lg:mb-20 relative z-10">
-            <Reveal multiplier={2.34} type="fade" className="mb-6 block">
-              <span className="text-[10px] uppercase tracking-[0.4em] text-muted block">Visual Repository / Motion & Still</span>
+        <section className="relative z-20 bg-bg py-10 lg:py-14 overflow-hidden text-center lg:text-left">
+          <div className="w-full px-6 md:px-[8%] mb-8 lg:mb-10 relative z-10">
+            <Reveal multiplier={2.34} type="fade" className="mb-3 block">
+              <span className="text-[9px] capitalize tracking-[0.2em] text-muted block">Visual Repository / Motion & Still</span>
             </Reveal>
-            <Reveal multiplier={2.34} type="text" className="leading-[0.8] text-6xl md:text-[7vw] font-display font-medium uppercase tracking-tighter">
-              THE <span className="font-serif italic font-normal text-muted opacity-40">ARCHIVE</span>
+            <Reveal multiplier={2.34} type="text" className="text-2xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-[1.1]">
+              The Archive
             </Reveal>
           </div>
 
           <div className="flex whitespace-nowrap group">
-            <div className="flex animate-marquee-fast shrink-0 items-end gap-4">
+            <div className="flex animate-marquee-fast shrink-0 items-center gap-6">
               {[...archiveMedia, ...archiveMedia].map((media, i) => {
-                // Uniform width, varied heights like a bar chart aligned to bottom
-                const heights = ['h-[60vh]', 'h-[35vh]', 'h-[45vh]', 'h-[25vh]', 'h-[50vh]', 'h-[40vh]'];
-                const heightClass = heights[i % heights.length];
-                
                 return (
                   <div 
                     key={`${media.id}-${i}`} 
-                    className={`w-[30vw] md:w-[25vw] ${heightClass} min-h-[200px] flex-shrink-0 transition-all duration-700 hover:scale-[1.02]`}
+                    className="w-[25vw] md:w-[20vw] h-[30vh] md:h-[40vh] flex-shrink-0 transition-all duration-700 hover:scale-[1.02]"
                   >
                     <Reveal multiplier={2.34} type="image" className="w-full h-full">
-                      <div className="w-full h-full group overflow-hidden bg-muted/10 border border-border/5 rounded-[2px]">
+                      <div className="w-full h-full group overflow-hidden bg-muted/10 border border-border/5 rounded-[12px] md:rounded-[22px]">
                         {isVideo(media.image) ? (
                           <video src={media.image} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                         ) : (
@@ -270,25 +360,25 @@ export default function Home() {
       )}
 
       {/* 4. CLIENT PARTNERS */}
-      <section className="relative z-10 py-8 lg:py-20 bg-bg border-t border-border overflow-hidden">
-        <div className="w-full px-5 md:px-11 mb-12 text-center">
-           <Reveal multiplier={1.8} type="glitch" className="text-[10px] uppercase tracking-[0.5em] font-bold">Trusted <span className="font-serif italic text-muted opacity-40">Partners</span></Reveal>
+      <section className="relative z-10 py-10 lg:py-14 bg-bg overflow-hidden">
+        <div className="w-full px-6 md:px-[8%] mb-8 text-center lg:text-left">
+           <Reveal multiplier={1.8} type="fade" className="text-[9px] capitalize tracking-[0.5em] font-bold text-muted">Trusted Partners</Reveal>
         </div>
 
         {clientLogos.length > 0 ? (
-          <div className="flex whitespace-nowrap overflow-hidden group border-y border-border/10 py-16">
+          <div className="flex whitespace-nowrap overflow-hidden group border-y border-border/10 py-12">
             <div className="flex animate-marquee shrink-0 items-center">
               {[...clientLogos, ...clientLogos, ...clientLogos, ...clientLogos].map((logo, i) => (
-                <div key={`${logo.id}-${i}`} className="flex items-center mx-24 justify-center">
+                <div key={`${logo.id}-${i}`} className="flex items-center mx-20 justify-center">
                   {logo.logo ? (
                     <img 
                       src={logo.logo} 
                       alt={logo.name} 
-                      className="h-8 md:h-12 w-auto object-contain transition-all duration-500 grayscale brightness-0 opacity-100 hover:opacity-70 transition-all"
+                      className="h-6 md:h-9 w-auto object-contain transition-all duration-500 grayscale brightness-0 opacity-100 hover:opacity-70 transition-all"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="text-2xl md:text-4xl font-display font-medium uppercase tracking-tighter hover:opacity-100 transition-all cursor-default">
+                    <span className="text-xl md:text-3xl font-display font-medium capitalize tracking-tighter hover:opacity-100 transition-all cursor-default">
                       {logo.name}
                     </span>
                   )}
@@ -297,55 +387,45 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="px-6 md:px-12 text-center py-20 border border-dashed border-border mx-6 md:mx-12 rounded-lg">
-             <span className="text-[10px] uppercase tracking-widest text-muted opacity-30 italic">Populate client record in CMS to activate the carousel.</span>
+          <div className="px-6 md:px-12 text-center py-16 border border-dashed border-border mx-6 md:mx-12 rounded-lg">
+             <span className="text-[9px] capitalize tracking-widest text-muted opacity-30 italic">Populate client record in CMS to activate the carousel.</span>
           </div>
         )}
       </section>
-
-      {/* 6. FINAL ACTION SECTION */}
-      <section className="relative z-10 py-24 lg:py-60 px-5 md:px-11 bg-fg text-bg overflow-hidden translate-y-[-1px]">
-        {/* Floating Portrait with Glitch */}
-        {aboutData?.connect_image && (
-          <div className="absolute left-[10%] top-1/2 -translate-y-1/2 w-[35vw] max-w-[400px] z-0 opacity-40 mix-blend-screen pointer-events-none">
-            <div className="animate-float">
-              <div className="animate-glitch-cinematic">
-                <img 
-                  src={aboutData.connect_image} 
-                  alt="Connect Portrait" 
-                  className="w-full h-auto"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="w-full text-center relative z-10">
-          <Reveal multiplier={1.8} type="fade" className="text-[10px] uppercase tracking-[0.5em] opacity-40 mb-12 block">Ready?</Reveal>
-          
-          <Reveal multiplier={1.8} type="glitch" className="text-6xl md:text-[8vw] font-display font-medium tracking-tighter leading-[0.8] uppercase mb-40">
-            Let's build <br /> <span className="font-serif italic font-normal lowercase tracking-wide">something</span> <br /> <span className="text-muted opacity-40">iconic</span>
+      {/* 6. FINAL ACTION SECTION - UPDATED TO MINIMAL CENTERED DESIGN */}
+      <section className="relative z-10 py-12 lg:py-16 px-6 md:px-[8%] bg-bg text-fg overflow-hidden border-t border-border">
+        <div className="w-full relative z-10 mx-auto flex flex-col items-center text-center">
+          <Reveal multiplier={1.5} type="fade" className="block mb-6">
+            <span className="text-[10px] font-sans font-bold tracking-[0.2em] text-muted capitalize">Let's build something collective</span>
           </Reveal>
           
-          <div className="flex flex-col md:flex-row justify-between items-center lg:items-end gap-12 text-center lg:text-left">
-            <Reveal multiplier={1.8} type="fade" className="space-y-4">
-              <span className="text-[10px] font-sans tracking-[0.3em] opacity-40 uppercase">Collaboration</span>
-              <p className="text-3xl font-display uppercase tracking-tighter">Available for <br /> global projects</p>
-            </Reveal>
-            
-            <Reveal multiplier={1.8} type="fade" delay={0.3} className="space-y-6">
-              <span className="text-[10px] font-sans tracking-[0.3em] opacity-40 uppercase">Direct Briefs</span>
-              <div className="space-y-2">
-                <a href="mailto:hello@ashishguptaa.com" className="text-3xl md:text-[5vw] font-display uppercase tracking-tighter border-b-2 border-bg/40 hover:border-bg transition-all duration-500 block">
-                  hello@ashishguptaa.com
-                </a>
-                <a href="tel:+918866138571" className="text-xl md:text-[2vw] font-display uppercase tracking-tighter opacity-60 hover:opacity-100 transition-all duration-500 block">
-                  +91-88661 38571
-                </a>
-              </div>
-            </Reveal>
-          </div>
+          <Reveal multiplier={1.5} type="text" delay={0.2} className="mb-10 lg:mb-12">
+            <h2 className="text-3xl md:text-[4.5vw] font-display font-medium tracking-tighter leading-[1.1] mb-4">
+              Have a perspective? <br />
+              Let's make it real.
+            </h2>
+          </Reveal>
+          
+          <Reveal multiplier={1.5} type="fade" delay={0.3} className="mb-12">
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+              <a 
+                href={`mailto:${siteContent['contact_email'] || 'hello@ashishguptaa.com'}`}
+                className="text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-0.5"
+              >
+                {siteContent['contact_email'] || 'hello@ashishguptaa.com'}
+              </a>
+              <a 
+                href="tel:+918866138571"
+                className="text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-0.5"
+              >
+                +91 88661 38571
+              </a>
+            </div>
+          </Reveal>
+          
+          <Reveal multiplier={1.5} type="fade" delay={0.5}>
+            <Button onClick={openBookingModal}>Book A Call</Button>
+          </Reveal>
         </div>
       </section>
       

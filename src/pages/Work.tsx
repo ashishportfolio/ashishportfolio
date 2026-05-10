@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import CustomCursor from '../components/CustomCursor';
+import ProjectCard from '../components/ProjectCard';
 import Reveal from '../components/Reveal';
 import { supabase } from '../lib/supabase';
 import { Project } from '../types';
@@ -33,76 +32,25 @@ export default function Work() {
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-bg">
-        <div className="font-display text-4xl animate-pulse tracking-tighter">LOADING...</div>
+        <div className="font-display text-4xl animate-pulse tracking-tighter">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="pt-16 lg:pt-40 pb-10 lg:pb-20 bg-bg overflow-x-hidden text-center lg:text-left">
-      <CustomCursor />
-      <div className="px-5 md:px-11 mb-12 lg:mb-32 w-full">
-        <Reveal type="text" className="text-6xl md:text-[8vw] font-display font-medium leading-[0.8] uppercase text-center lg:text-left">
-          PROJECT <br /> <span className="font-serif italic font-normal">INDEX</span>
+    <div className="pt-12 md:pt-16 lg:pt-20 pb-10 md:pb-12 lg:pb-16 px-6 md:px-[8%] bg-bg overflow-x-hidden text-center lg:text-left">
+      <div className="mb-6 md:mb-8 lg:mb-12 w-full">
+        <Reveal type="text" className="text-4xl md:text-[5.5vw] font-display font-medium leading-[1.1] tracking-tighter text-center lg:text-left">
+          Project Index
         </Reveal>
       </div>
 
-      <div className="flex flex-col gap-12 lg:gap-32">
-        {projects.map((project) => {
-          console.log(`Work project ${project.title} media:`, { image: project.image, video: project.video });
-          return (
-            <section 
-              key={project.id} 
-              className="project-scene relative flex flex-col items-center px-5 md:px-11"
-            >
-              <div className="w-full">
-                <Reveal type="image">
-                  <Link 
-                    to={`/work/${project.slug}`}
-                    className="project-image-container relative group block overflow-hidden w-full aspect-[16/9] md:aspect-[21/9]"
-                    data-project-id={project.id}
-                    data-project-video={project.hover_video || project.video}
-                  >
-                    {/* Main Media (Hybrid Image or Video) */}
-                    <div className="w-full h-full transition-all duration-500">
-                      {isVideo(project.image) ? (
-                        <video 
-                          src={project.image}
-                          autoPlay muted loop playsInline
-                          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 ease-out"
-                        />
-                      ) : project.image ? (
-                        <img
-                          src={project.image}
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 ease-out"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted/20 flex items-center justify-center">
-                           <span className="text-xs uppercase tracking-widest text-muted">No Media</span>
-                        </div>
-                      )}
-                    </div>
-
-
-                  </Link>
-                </Reveal>
-                
-                <div className="mt-12 flex flex-col gap-4 w-full">
-                  <Reveal type="text" className="text-3xl md:text-5xl font-display font-medium uppercase tracking-tighter">
-                    {project.title}
-                  </Reveal>
-                  <Reveal type="fade" delay={0.2}>
-                    <p className="text-muted text-[10px] md:text-xs leading-relaxed w-full uppercase tracking-[0.2em] font-medium">
-                      {project.overview || project.description}
-                    </p>
-                  </Reveal>
-                </div>
-              </div>
-            </section>
-          );
-        })}
+      <div className="flex flex-col gap-6 md:gap-12 lg:gap-20">
+        {projects.map((project, i) => (
+          <div key={project.id} className="project-scene relative">
+            <ProjectCard project={project} index={i} />
+          </div>
+        ))}
       </div>
     </div>
   );

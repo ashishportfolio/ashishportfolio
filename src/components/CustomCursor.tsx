@@ -15,13 +15,14 @@ export default function CustomCursor() {
       gsap.to(cursor, {
         x: e.clientX,
         y: e.clientY,
-        duration: 0.1,
+        duration: 0.12,
+        ease: 'power2.out',
       });
       gsap.to(follower, {
         x: e.clientX,
         y: e.clientY,
-        duration: 0.5,
-        ease: 'power2.out',
+        duration: 0.4,
+        ease: 'power3.out',
       });
     };
 
@@ -52,7 +53,7 @@ export default function CustomCursor() {
       {/* Main Dot */}
       <div
         ref={cursorRef}
-        className="hidden lg:block fixed top-0 left-0 w-2 h-2 bg-fg rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference"
+        className="hidden lg:block fixed top-0 left-0 w-[10.5px] h-[10.5px] bg-[#FF4D00] rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
       />
       
       {/* Follower / Video Preview Container */}
