@@ -356,7 +356,7 @@ export default function Home() {
         <section className="relative z-20 bg-bg py-10 lg:py-14 overflow-hidden text-center lg:text-left">
           <div className="w-full px-6 md:px-[8%] mb-8 lg:mb-10 relative z-10">
             <Reveal multiplier={2.34} type="fade" className="mb-3 block">
-              <span className="text-[9px] capitalize tracking-[0.2em] text-muted block">Visual Repository / Motion & Still</span>
+              <span className="text-[9px] capitalize tracking-[0.2em] text-muted block">Visual Repository</span>
             </Reveal>
             <Reveal multiplier={2.34} type="text" className="text-2xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-[1.1]">
               The Archive

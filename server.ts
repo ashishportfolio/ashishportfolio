@@ -22,7 +22,7 @@ async function startServer() {
     }
 
     const { type, data } = req.body;
-    const recipient = process.env.NOTIFICATION_EMAIL || "avnaa.santosh@gmail.com";
+    const recipient = process.env.NOTIFICATION_EMAIL || "imguptashish@gmail.com";
 
     try {
       let subject = "";
