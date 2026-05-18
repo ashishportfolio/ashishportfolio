@@ -130,7 +130,7 @@ export default function Navbar() {
                transition={{ delay: 0.6 }}
                className="absolute bottom-12 flex flex-col items-center gap-4 text-[10px] uppercase font-bold tracking-[0.2em]"
             >
-              <span>Ashish Guptaa — Creative Portfolio</span>
+              <span>Ashish Guptaa — Art Director</span>
             </motion.div>
           </motion.div>
         )}

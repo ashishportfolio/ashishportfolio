@@ -1,22 +1,25 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { SERVICES } from '../data/projects';
 import Hero from '../components/Hero';
 import Button from '../components/Button';
 import ProjectCard from '../components/ProjectCard';
 import Reveal from '../components/Reveal';
+import ProcessSection from '../components/ProcessSection';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { supabase } from '../lib/supabase';
 import { Project, ArchiveMedia, AboutContent } from '../types';
 import { isVideo } from '../lib/utils';
 import { useBooking } from '../context/BookingContext';
+import { useSiteContext } from '../context/SiteContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface ServiceProps {
   title: string;
+  description: string;
   items: string[];
 }
 
@@ -26,18 +29,8 @@ interface ServiceCardProps {
   key?: string;
 }
 
-function ServiceCard({ service, index }: ServiceCardProps) {
+function ServiceCard({ service }: ServiceCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  // Descriptions based on service titles
-  const getDescription = (title: string) => {
-    switch(title) {
-      case 'Brand & Identity': return "Crafting distinctive visual languages and strategic positioning that defines brands and resonates with audiences globally. We build identities that stick.";
-      case 'Art Direction': return "Elevating visual narratives through cinematic direction, conceptual storytelling, and high-impact visual design systems for digital and print.";
-      case 'AI Production': return "Pushing creative boundaries with cutting-edge AI technologies, generative art, and forward-thinking digital workflows that redefine production.";
-      default: return "Transforming concepts into captivating visual journeys with a focus on immersive storytelling and cultural impact.";
-    }
-  };
 
   return (
     <div className="relative p-7 md:p-10 rounded-[20px] border border-white/10 bg-[#0f0f0f] overflow-hidden group transition-all duration-500 hover:border-white/20">
@@ -58,7 +51,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
       </div>
 
       <p className="text-xs md:text-sm opacity-50 font-sans font-medium leading-[1.6] max-w-2xl mb-0">
-        {getDescription(service.title)}
+        {service.description}
       </p>
 
       <motion.div
@@ -71,8 +64,8 @@ function ServiceCard({ service, index }: ServiceCardProps) {
            <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-4">
               {service.items.map((item, idx) => (
                 <div key={item} className="flex items-center gap-3 group/item">
-                  <span className="text-[8px] opacity-20 font-bold">0{idx + 1}</span>
-                  <span className="text-[10px] md:text-[11px] capitalize tracking-wide opacity-60 group-hover/item:opacity-100 transition-opacity font-bold">{item}</span>
+                   <span className="text-[8px] opacity-20 font-bold">0{idx + 1}</span>
+                   <span className="text-[10px] md:text-[11px] capitalize tracking-wide opacity-60 group-hover/item:opacity-100 transition-opacity font-bold">{item}</span>
                 </div>
               ))}
            </div>
@@ -84,12 +77,16 @@ function ServiceCard({ service, index }: ServiceCardProps) {
 
 export default function Home() {
   const { openBookingModal } = useBooking();
+  const { siteContent } = useSiteContext();
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const [archiveMedia, setArchiveMedia] = useState<ArchiveMedia[]>([]);
   const [clientLogos, setClientLogos] = useState<any[]>([]);
   const [aboutData, setAboutData] = useState<AboutContent | null>(null);
-  const [siteContent, setSiteContent] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [showAllServices, setShowAllServices] = useState(false);
+
+  const initialServices = SERVICES.slice(0, 4);
+  const remainingServices = SERVICES.slice(4);
 
   useEffect(() => {
     async function fetchData() {
@@ -98,18 +95,11 @@ export default function Home() {
         const { data: aData } = await supabase.from('archive_media').select('*').order('order_index', { ascending: true });
         const { data: lData } = await supabase.from('client_logos').select('*').order('order_index', { ascending: true });
         const { data: abData } = await supabase.from('about_content').select('*').single();
-        const { data: sData } = await supabase.from('site_content').select('*');
 
         setFeaturedProjects(pData || []);
         setArchiveMedia(aData || []);
         setClientLogos(lData || []);
         setAboutData(abData || null);
-        
-        if (sData) {
-          const contentMap: Record<string, string> = {};
-          sData.forEach((item: any) => contentMap[item.key] = item.value);
-          setSiteContent(contentMap);
-        }
       } catch (err) {
         console.error('Fetch error:', err);
       } finally {
@@ -160,7 +150,7 @@ export default function Home() {
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-bg">
-        <div className="font-display text-xl md:text-3xl animate-pulse tracking-tighter normal-case font-medium">Ashish Gupta &nbsp; / &nbsp; Loading</div>
+        <div className="font-display text-xl md:text-3xl animate-pulse tracking-tighter normal-case font-medium">Ashish Guptaa &nbsp; / &nbsp; Art Director</div>
       </div>
     );
   }
@@ -173,7 +163,7 @@ export default function Home() {
       <section className="relative z-10 py-10 lg:py-14 px-6 md:px-[8%] bg-bg overflow-hidden">
         <div className="w-full relative z-10">
           <Reveal multiplier={1.8} type="text" className="w-full block text-xl md:text-[3.04vw] font-display font-medium leading-[1.1] tracking-tighter mb-8 lg:mb-12">
-            {siteContent['profile_title'] || aboutData?.profile_title || "A brand designer and art director based in Mumbai, passionate about creating immersive visual experiences. From crafting realistic brand identities to dynamic animations and interactions.®"}
+            {siteContent['profile_title'] || aboutData?.profile_title || "Ashish Guptaa is an Ex-Ogilvy Art Director, Brand Identity Designer, and AI Visual Storyteller from India, with 7+ years of professional experience and over 10 years of creative practice."}
           </Reveal>
           
           <div className="mb-10 lg:mb-16 flex flex-col md:flex-row items-center justify-between gap-12">
@@ -185,10 +175,10 @@ export default function Home() {
             {(siteContent['profile_section_image'] || aboutData?.profile_section_image) && (
               <Reveal multiplier={1.8} type="image" className="w-[10vw] min-w-[120px] aspect-video">
                 <img 
-                  src={siteContent['profile_section_image'] || aboutData?.profile_section_image} 
-                  className="w-full h-full object-cover rounded-sm grayscale hover:grayscale-0 transition-all duration-1000" 
-                  alt="Profile Accent"
-                  referrerPolicy="no-referrer"
+                   src={siteContent['profile_section_image'] || aboutData?.profile_section_image} 
+                   className="w-full h-full object-cover rounded-sm grayscale hover:grayscale-0 transition-all duration-1000" 
+                   alt="Profile Accent"
+                   referrerPolicy="no-referrer"
                 />
               </Reveal>
             )}
@@ -256,18 +246,17 @@ export default function Home() {
           />
         </div>
 
-        <div className="w-full relative z-10">
+        <div className="w-full relative z-10" id="services-grid">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-6 min-h-[60vh]">
             {/* Left Content */}
             <div className="lg:col-span-4 flex flex-col justify-between">
               <div>
                 <Reveal multiplier={1.5} type="text" className="text-2xl md:text-[3.2vw] font-display font-medium leading-[1.1] tracking-tighter mb-6">
-                  Defining Visual<br />
-                  Identities & Legacies.
+                  What Gets Created
                 </Reveal>
                 <Reveal multiplier={1.5} type="fade" delay={0.2}>
                    <p className="text-xs md:text-sm text-bg font-sans font-normal max-w-sm opacity-90 leading-[1.6]">
-                     As an art director and brand designer, I help visionary founders shape their visual narrative. I bridge the gap between conceptual storytelling and strategic design to build brands that leave a lasting impact.
+                     Visual work built with story, strategy, craft, and art direction - made for brands, campaigns, films, products, music, and AI-led storytelling.
                    </p>
                 </Reveal>
               </div>
@@ -283,13 +272,60 @@ export default function Home() {
 
             {/* Right Cards Stack */}
             <div className="lg:col-span-7 lg:col-start-6 flex flex-col gap-5">
-              {SERVICES.map((service, i) => (
+              {initialServices.map((service, i) => (
                 <ServiceCard key={service.title} service={service} index={i} />
               ))}
+
+              <AnimatePresence>
+                {showAllServices && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex flex-col gap-5 overflow-hidden"
+                  >
+                    {remainingServices.map((service, i) => (
+                      <ServiceCard key={service.title} service={service} index={i + 4} />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {SERVICES.length > 4 && (
+                <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  className="pt-4 flex justify-center lg:justify-start"
+                >
+                  <button 
+                    onClick={() => {
+                        setShowAllServices(!showAllServices);
+                        if(showAllServices) {
+                          // Optional: scroll back to services top if closing
+                          document.getElementById('services-grid')?.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }}
+                    className="group relative flex items-center gap-4 bg-transparent border border-white/20 hover:border-white px-10 py-4 rounded-full transition-all duration-500 overflow-hidden"
+                  >
+                    <span className="relative z-10 text-[11px] uppercase font-bold tracking-[0.2em] group-hover:text-fg transition-colors duration-500">
+                      {showAllServices ? 'Show Less' : 'View All Services'}
+                    </span>
+                    <div className={`relative z-10 w-5 h-5 rounded-full bg-white text-bg flex items-center justify-center transition-transform duration-700 ${showAllServices ? 'rotate-180' : ''}`}>
+                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                       </svg>
+                    </div>
+                    <div className="absolute inset-0 bg-white translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500" />
+                  </button>
+                </motion.div>
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      <ProcessSection />
 
       {/* 3. SELECTED WORKS */}
       <section className="featured-works-section relative z-10 py-10 lg:py-14 bg-bg">
@@ -314,13 +350,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-
-                     
-
-
-
-
 
       {/* ARCHIVE BENTO LOOP SECTION */}
       {archiveMedia.length > 0 && (
@@ -374,7 +403,7 @@ export default function Home() {
                     <img 
                       src={logo.logo} 
                       alt={logo.name} 
-                      className="h-6 md:h-9 w-auto object-contain transition-all duration-500 grayscale brightness-0 opacity-100 hover:opacity-70 transition-all"
+                      className="h-7 md:h-10 w-auto object-contain transition-all duration-500 grayscale opacity-100 hover:opacity-70"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -415,10 +444,10 @@ export default function Home() {
                 {siteContent['contact_email'] || 'hello@ashishguptaa.com'}
               </a>
               <a 
-                href="tel:+918866138571"
+                href={`tel:${siteContent['contact_phone'] || '+918866138571'}`}
                 className="text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-0.5"
               >
-                +91 88661 38571
+                {siteContent['contact_phone'] || '+91 88661 38571'}
               </a>
             </div>
           </Reveal>

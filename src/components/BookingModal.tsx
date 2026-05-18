@@ -84,6 +84,28 @@ export default function BookingModal() {
       });
 
       if (error) throw error;
+
+      // Send email notification
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'booking',
+            data: {
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              date: dateString,
+              time_slot: selectedTimeSlot,
+              message: formData.message
+            }
+          })
+        });
+      } catch (emailErr) {
+        console.error('Failed to send email notification:', emailErr);
+      }
+
       setStep(4);
     } catch (err: any) {
       alert(`Booking failed: ${err.message}`);

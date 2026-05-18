@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import ImageReveal from '../components/ImageReveal';
 import Button from '../components/Button';
 import Reveal from '../components/Reveal';
@@ -73,7 +74,20 @@ export default function CaseStudy() {
       <section className="relative h-[85vh] md:h-[95vh] w-full overflow-hidden bg-black group">
         {/* Background Media */}
         <div className="absolute inset-0 z-0">
-          {project.video || (project.image && isVideo(project.image)) ? (
+          {project.case_study_banner && isVideo(project.case_study_banner) ? (
+            <video 
+              src={project.case_study_banner}
+              autoPlay muted loop playsInline
+              className="w-full h-full object-cover opacity-60"
+            />
+          ) : project.case_study_banner ? (
+            <img 
+              src={project.case_study_banner} 
+              alt={project.title}
+              className="w-full h-full object-cover opacity-60"
+              referrerPolicy="no-referrer"
+            />
+          ) : project.video || (project.image && isVideo(project.image)) ? (
             <video 
               src={project.video || project.image}
               autoPlay muted loop playsInline
@@ -146,47 +160,49 @@ export default function CaseStudy() {
         <div className="px-6 md:px-[8%] space-y-10 md:space-y-24">
           
           {/* Lead Intro / Overview - Tightened further */}
-          <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start border-b border-black/5 pb-8 md:pb-12">
-            <div className="w-full md:w-1/4">
-              <Reveal type="fade" className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 bg-[#FF4D00] rounded-[2px]" />
-                <span className="text-[10px] font-bold text-black border-b border-black pb-0.5 tracking-widest uppercase">The Directive</span>
-              </Reveal>
+          {project.show_directive !== false && (
+            <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start border-b border-black/5 pb-8 md:pb-12">
+              <div className="w-full">
+                <Reveal type="text" className="text-xl md:text-2xl font-display font-medium text-black/80 leading-[1.4] tracking-tight max-w-4xl">
+                  {project.longDescription}
+                </Reveal>
+              </div>
             </div>
-            <div className="w-full md:w-3/4">
-              <Reveal type="text" className="text-xl md:text-2xl font-display font-medium text-black/80 leading-[1.4] tracking-tight max-w-4xl">
-                {project.longDescription || "We defined a new digital standard for the project, focusing on a minimal yet high-impact visual narrative that prioritizes emotional connection and functional clarity."}
-              </Reveal>
-            </div>
-          </div>
+          )}
 
           {/* Staggered Sections - Even tighter vertical gaps */}
           {[
             { 
+              title: "Overview", 
+              content: project.overview, 
+              image: project.image_overview,
+              show: project.show_overview
+            },
+            { 
               title: "The Challenge", 
               content: project.challenge, 
-              image: project.image_challenge || project.image_overview,
-              number: "02"
+              image: project.image_challenge,
+              show: project.show_challenge
             },
             { 
               title: "Our Approach", 
               content: project.approach, 
               image: project.image_approach,
-              number: "03"
+              show: project.show_approach
             },
             { 
               title: "Execution", 
               content: project.execution, 
               image: project.image_execution,
-              number: "04"
+              show: project.show_execution
             },
             { 
               title: "Outcome", 
               content: project.outcome, 
               image: project.image_outcome,
-              number: "05"
+              show: project.show_outcome
             }
-          ].map((section, idx) => section.content && (
+          ].map((section, idx) => (
             <div key={idx} className="space-y-4 md:space-y-8">
               {/* Media First */}
               {section.image && (
@@ -211,14 +227,13 @@ export default function CaseStudy() {
               )}
 
               {/* Text Second - Closer to image */}
-              <div className="w-full space-y-2 md:space-y-3">
-                <Reveal type="fade">
-                  <span className="text-[8px] font-bold text-[#FF4D00] capitalize tracking-[0.2em] font-sans">Level {section.number} // {section.title}</span>
-                </Reveal>
-                <Reveal type="text" className="text-lg md:text-xl font-display font-medium text-black leading-[1.5] tracking-tight max-w-4xl">
-                  {section.content}
-                </Reveal>
-              </div>
+              {section.show !== false && section.content && (
+                <div className="w-full">
+                  <Reveal type="text" className="text-lg md:text-xl font-display font-medium text-black leading-[1.5] tracking-tight max-w-4xl">
+                    {section.content}
+                  </Reveal>
+                </div>
+              )}
             </div>
           ))}
 
@@ -227,9 +242,14 @@ export default function CaseStudy() {
 
       {/* 4. NEXT PROJECT */}
       {nextProject && (
-        <section className="py-24 bg-[#f4f4f4] rounded-[40px] mx-6 md:mx-[8%] flex flex-col items-center text-center">
+        <motion.section 
+          initial={{ backgroundPosition: '0% 50%' }}
+          animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="py-10 md:py-14 bg-gradient-to-r from-[#FFF5EF] via-[#FFEBDD] to-[#FFF5EF] bg-[length:200%_200%] rounded-[40px] mx-6 md:mx-[8%] flex flex-col items-center text-center shadow-sm"
+        >
           <Reveal type="fade">
-            <span className="text-[8px] font-bold text-black/30 capitalize tracking-[0.3em] mb-10 block">Next Story</span>
+            <span className="text-[8px] font-bold text-black/30 capitalize tracking-[0.3em] mb-6 block">Next Story</span>
           </Reveal>
           <Link to={`/work/${nextProject.slug}`} className="group relative overflow-hidden">
             <Reveal type="text" className="text-4xl md:text-[5.5vw] font-display font-medium text-black tracking-tighter leading-[1.1] group-hover:italic transition-all duration-500">
@@ -241,7 +261,7 @@ export default function CaseStudy() {
                </div>
             </div>
           </Link>
-        </section>
+        </motion.section>
       )}
     </div>
   );

@@ -2,10 +2,11 @@ import { motion } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { SiteContent } from '../types';
+import { useSiteContext } from '../context/SiteContext';
 import Button from '../components/Button';
 
 export default function Contact() {
-  const [siteContent, setSiteContent] = useState<Record<string, string>>({});
+  const { siteContent } = useSiteContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -14,18 +15,6 @@ export default function Contact() {
     subject: 'Brand Identity',
     message: ''
   });
-
-  useEffect(() => {
-    async function fetchContactData() {
-      const { data } = await supabase.from('site_content').select('*');
-      if (data) {
-        const contentMap: Record<string, string> = {};
-        data.forEach((item: SiteContent) => contentMap[item.key] = item.value);
-        setSiteContent(contentMap);
-      }
-    }
-    fetchContactData();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +33,26 @@ export default function Contact() {
         ]);
 
       if (error) throw error;
+
+      // Send email notification
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'contact',
+            data: {
+              name: formData.name,
+              email: formData.email,
+              subject: formData.subject,
+              message: formData.message
+            }
+          })
+        });
+      } catch (emailErr) {
+        console.error('Failed to send email notification:', emailErr);
+      }
+
       setSubmitted(true);
       setFormData({ name: '', email: '', subject: 'Brand Identity', message: '' });
     } catch (err) {
@@ -63,16 +72,39 @@ export default function Contact() {
     <div className="pt-20 md:pt-24 lg:pt-32 pb-10 md:pb-12 lg:pb-16 px-6 md:px-[8%] bg-bg text-left lg:text-left">
       <div className="w-full mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-20">
-          <div className="text-center md:text-left">
+          <div className="text-left">
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-4xl md:text-[5.5vw] font-display font-medium tracking-tighter leading-[1.1] capitalize"
+              className="text-3xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-[1.1] mb-10"
             >
-              {renderTitle()}
+              Let’s give your next idea a story and a clear art direction.
             </motion.h1>
-            <div className="mt-8 lg:mt-12 space-y-6 md:space-y-8 lg:space-y-10">
+
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+               className="space-y-6 text-xs md:text-sm text-balance text-muted leading-relaxed max-w-lg mb-12"
+            >
+              <p>
+                For brand identity design, key visual design, campaign art direction, AI art direction, AI
+                filmmaking, product visuals, movie posters, music key art, music videos, or complete visual
+                systems — share the brief.
+              </p>
+              <p>
+                Built for brands, founders, agencies, creators, artists, and filmmakers looking for visuals that do
+                more than look good.
+              </p>
+              <div className="space-y-1 font-medium text-fg">
+                <p>Visuals that carry a story.</p>
+                <p>Create connection.</p>
+                <p>Stay remembered.</p>
+              </div>
+            </motion.div>
+
+            <div className="space-y-6 md:space-y-8">
               <div className="space-y-3">
                 <h2 className="text-[9px] font-sans tracking-[0.15em] text-muted capitalize">Get in Touch</h2>
                 <div className="space-y-2">
@@ -84,11 +116,6 @@ export default function Contact() {
                       {siteContent['contact_phone'] || "+91-88661 38571"}
                     </a>
                   </p>
-                  {siteContent['contact_address'] && (
-                    <p className="text-[10px] font-sans tracking-[0.05em] text-muted capitalize mt-3">
-                      {siteContent['contact_address']}
-                    </p>
-                  )}
                 </div>
               </div>
               <div className="space-y-3">

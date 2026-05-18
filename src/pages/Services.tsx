@@ -5,68 +5,32 @@ import { supabase } from '../lib/supabase';
 import Button from '../components/Button';
 import Reveal from '../components/Reveal';
 import { useBooking } from '../context/BookingContext';
+import { useSiteContext } from '../context/SiteContext';
+import { SERVICES } from '../data/projects';
 
-const serviceData = [
-  {
-    category: "Brand & Identity",
-    image: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=800&auto=format&fit=crop",
-    items: [
-      "Logo Design (primary, variations, usage)",
-      "Brand Identity Systems (color, typography, visual language)",
-      "Brand Guidelines & Style Books",
-      "Rebranding / Brand Refresh",
-      "Packaging Design (labels, boxes, product visuals)",
-      "Typography & Wordmark Design"
-    ]
-  },
-  {
-    category: "Art Direction & Campaigns",
-    image: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
-    items: [
-      "Key Visual Design (KVs, launch creatives)",
-      "Campaign Ads (print, digital, OOH)",
-      "Creative Direction (campaign concepts, storytelling)",
-      "Photography / Shoot Art Direction",
-      "Poster Design",
-      "Social Media & Performance Creatives"
-    ]
-  },
-  {
-    category: "AI Creative Production",
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
-    items: [
-      "AI Filmmaking (ads, short-form, narrative)",
-      "AI Storytelling & Concept Visualization",
-      "AI Key Visuals (GENESIS Framework)",
-      "AI Brand World-Building",
-      "AI + Live Action Hybrid Production",
-      "Concept Art & Pre-visualization"
-    ]
-  }
-];
+const DEFAULT_IMAGES: Record<string, string> = {
+  'Brand Identity Design': "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=800&auto=format&fit=crop",
+  'Campaign Art Direction': "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
+  'Storytelling-led Key Visual Design': "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
+  'AI Art Direction': "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop",
+  'AI Filmmaking': "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=800&auto=format&fit=crop",
+  'Movie Poster & Music Key Art Design': "https://images.unsplash.com/photo-1588693951525-68995a9478f7?q=80&w=800&auto=format&fit=crop",
+  'Product Photography & Visualization': "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop"
+};
+
+const IMAGE_KEYS: Record<string, string> = {
+  'Brand Identity Design': 'service_image_brand',
+  'Campaign Art Direction': 'service_image_art',
+  'Storytelling-led Key Visual Design': 'service_image_storytelling',
+  'AI Art Direction': 'service_image_ai',
+  'AI Filmmaking': 'service_image_ai_film',
+  'Movie Poster & Music Key Art Design': 'service_image_movie',
+  'Product Photography & Visualization': 'service_image_product'
+};
 
 export default function Services() {
   const { openBookingModal } = useBooking();
-  const [siteContent, setSiteContent] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data: sData } = await supabase.from('site_content').select('*');
-        if (sData) {
-          const contentMap: Record<string, string> = {};
-          sData.forEach((item: any) => contentMap[item.key] = item.value);
-          setSiteContent(contentMap);
-        }
-      } catch (err) {
-        console.error('Fetch error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+  const { siteContent, isLoading } = useSiteContext();
 
   if (isLoading) {
     return (
@@ -75,45 +39,6 @@ export default function Services() {
       </div>
     );
   }
-
-  const dynamicServiceData = [
-    {
-      category: "Brand & Identity",
-      image: siteContent['service_image_brand'] || "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=800&auto=format&fit=crop",
-      items: [
-        "Logo Design (primary, variations, usage)",
-        "Brand Identity Systems (color, typography, visual language)",
-        "Brand Guidelines & Style Books",
-        "Rebranding / Brand Refresh",
-        "Packaging Design (labels, boxes, product visuals)",
-        "Typography & Wordmark Design"
-      ]
-    },
-    {
-      category: "Art Direction & Campaigns",
-      image: siteContent['service_image_art'] || "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
-      items: [
-        "Key Visual Design (KVs, launch creatives)",
-        "Campaign Ads (print, digital, OOH)",
-        "Creative Direction (campaign concepts, storytelling)",
-        "Photography / Shoot Art Direction",
-        "Poster Design",
-        "Social Media & Performance Creatives"
-      ]
-    },
-    {
-      category: "AI Creative Production",
-      image: siteContent['service_image_ai'] || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
-      items: [
-        "AI Filmmaking (ads, short-form, narrative)",
-        "AI Storytelling & Concept Visualization",
-        "AI Key Visuals (GENESIS Framework)",
-        "AI Brand World-Building",
-        "AI + Live Action Hybrid Production",
-        "Concept Art & Pre-visualization"
-      ]
-    }
-  ];
 
   return (
     <div className="w-full bg-bg text-fg font-sans selection:bg-fg selection:text-bg pb-12 md:pb-16 lg:pb-20 overflow-x-hidden relative">
@@ -190,7 +115,7 @@ export default function Services() {
           </Reveal>
           {/* Main Heading */}
           <Reveal type="text" className="text-2xl md:text-[3.8vw] font-display font-medium tracking-tighter leading-[1.1]">
-            Every project is an opportunity to push boundaries, tell a story, and create something truly memorable. Let's build the extraordinary together again.®
+            Visual work built with story, strategy, craft, and art direction - made for brands, campaigns, films, products, music, and AI-led storytelling.
           </Reveal>
 
           {/* Call to action button matching mockup */}
@@ -203,62 +128,70 @@ export default function Services() {
       {/* Services List Table Design */}
       <section className="px-6 md:px-[8%] mx-auto">
         <div className="flex flex-col">
-          {dynamicServiceData.map((service, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="grid grid-cols-1 md:grid-cols-12 py-8 md:py-10 lg:py-14 border-t border-border group"
-            >
-              {/* Category Name & Image Column */}
-              <div className="md:col-span-4 mb-6 md:mb-0 space-y-4 md:space-y-6">
-                <h3 className="text-xl md:text-2xl font-display font-medium tracking-tight capitalize">
-                  {service.category}
-                </h3>
-                
-                {/* Small relevant image with reveal animation */}
-                <motion.div 
-                  initial={{ clipPath: "inset(100% 0 0 0)" }}
-                  whileInView={{ clipPath: "inset(0% 0 0 0)" }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full max-w-[180px] md:max-w-[220px] aspect-[4/3] rounded-lg overflow-hidden bg-[#f4f4f4] grayscale hover:grayscale-0 transition-all duration-700"
-                >
-                  <motion.img 
-                    src={service.image} 
-                    alt={service.category}
-                    className="w-full h-full object-cover"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.6 }}
-                    referrerPolicy="no-referrer"
-                  />
-                </motion.div>
-              </div>
+          {SERVICES.map((service, idx) => {
+            const imageKey = IMAGE_KEYS[service.title] || 'service_image_default';
+            const imageUrl = siteContent[imageKey] || DEFAULT_IMAGES[service.title] || "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=800&auto=format&fit=crop";
+            
+            return (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 1, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="grid grid-cols-1 md:grid-cols-12 py-8 md:py-10 lg:py-14 border-t border-border group"
+              >
+                {/* Category Name & Image Column */}
+                <div className="md:col-span-4 mb-6 md:mb-0 space-y-4 md:space-y-6">
+                  <h3 className="text-xl md:text-2xl font-display font-medium tracking-tight capitalize">
+                    {service.title}
+                  </h3>
+                  
+                  {/* Small relevant image with reveal animation */}
+                  <motion.div 
+                    initial={{ clipPath: "inset(100% 0 0 0)" }}
+                    whileInView={{ clipPath: "inset(0% 0 0 0)" }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-full max-w-[180px] md:max-w-[220px] aspect-[4/3] rounded-lg overflow-hidden bg-[#f4f4f4] grayscale hover:grayscale-0 transition-all duration-700"
+                  >
+                    <motion.img 
+                      src={imageUrl} 
+                      alt={service.title}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.6 }}
+                      referrerPolicy="no-referrer"
+                    />
+                  </motion.div>
+                </div>
 
-              {/* Service Items List */}
-              <div className="md:col-span-8 pr-0 md:pr-12 md:pt-1">
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-10">
-                  {service.items.map((item, i) => (
-                    <motion.li 
-                      key={i} 
-                      className="flex items-start gap-3"
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.3 + (i * 0.05) }}
-                    >
-                      <span className="text-[#FF4D00] mt-[8px] shrink-0 text-[6px]">●</span>
-                      <span className="text-xs md:text-sm font-sans font-medium text-fg/80 leading-[1.5]">
-                        {item}
-                      </span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-          ))}
+                {/* Service Items List */}
+                <div className="md:col-span-8 pr-0 md:pr-12 md:pt-1">
+                  <p className="text-xs md:text-sm font-sans text-fg/60 leading-relaxed mb-6 max-w-2xl">
+                    {service.description}
+                  </p>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-10">
+                    {service.items.map((item, i) => (
+                      <motion.li 
+                        key={i} 
+                        className="flex items-start gap-3"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.3 + (i * 0.05) }}
+                      >
+                        <span className="text-[#FF4D00] mt-[8px] shrink-0 text-[6px]">●</span>
+                        <span className="text-xs md:text-sm font-sans font-medium text-fg/80 leading-[1.5]">
+                          {item}
+                        </span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            );
+          })}
           <div className="border-t border-border w-full" />
         </div>
       </section>

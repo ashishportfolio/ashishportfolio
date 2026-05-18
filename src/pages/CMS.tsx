@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Project, HeroMedia, ArchiveMedia, AboutContent, ClientLogo, SiteContent, AvailabilitySlot, Booking, Inquiry } from '../types';
+import { useSiteContext } from '../context/SiteContext';
 import Reveal from '../components/Reveal';
 import { isVideo } from '../lib/utils';
 import { Clock, Calendar, Check, Trash2, Mail, User, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -59,6 +60,8 @@ export default function CMS() {
     id: '',
     type: 'project'
   });
+
+  const { refreshSiteContent } = useSiteContext();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -255,6 +258,7 @@ export default function CMS() {
         .upsert(updates, { onConflict: 'key' });
         
       if (error) throw error;
+      await refreshSiteContent();
       setMessage("Site content updated successfully!");
     } catch (err: any) {
       console.error("Save Site Content Error:", err);
@@ -424,7 +428,17 @@ export default function CMS() {
                   image_challenge: "",
                   image_approach: "",
                   image_execution: "",
-                  image_outcome: ""
+                  image_outcome: "",
+                  video: "",
+                  hover_video: "",
+                  case_study_banner: "",
+                  longDescription: "",
+                  show_directive: true,
+                  show_overview: true,
+                  show_challenge: true,
+                  show_approach: true,
+                  show_execution: true,
+                  show_outcome: true
                 })}
                 className="w-full py-4 border border-border hover:border-fg text-fg rounded-sm text-[10px] tracking-[0.2em] font-bold uppercase transition-all"
               >+ NEW PROJECT</button>
@@ -490,8 +504,8 @@ export default function CMS() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                       <div className="space-y-4">
-                        <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Thumbnail Asset (Image or Video)</label>
+                      <div className="space-y-4">
+                        <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Thumbnail Asset (Image - Grid View)</label>
                         {selectedProject.image && (
                           <div className="w-full aspect-video overflow-hidden rounded-sm border border-border mb-4">
                             {isVideo(selectedProject.image) ? (
@@ -501,7 +515,7 @@ export default function CMS() {
                             )}
                           </div>
                         )}
-                        <input type="text" placeholder="Media Link (Image/Video)" value={selectedProject.image} onChange={e => setSelectedProject({...selectedProject, image: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none focus:border-fg mb-2" />
+                        <input type="text" placeholder="Media Link (Image)" value={selectedProject.image} onChange={e => setSelectedProject({...selectedProject, image: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none focus:border-fg mb-2" />
                         <input type="file" onChange={e => handleFileUpload(e, 'image', 'project')} className="text-[9px] cursor-pointer" />
                       </div>
                       <div className="space-y-4">
@@ -510,22 +524,79 @@ export default function CMS() {
                         <input type="text" placeholder="Hover Video Link" value={selectedProject.hover_video || ""} onChange={e => setSelectedProject({...selectedProject, hover_video: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none focus:border-fg mb-2" />
                         <input type="file" onChange={e => handleFileUpload(e, 'hover_video', 'project')} className="text-[9px] cursor-pointer" />
                       </div>
+                      <div className="space-y-4">
+                        <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Case Study Top Banner (Image or Video)</label>
+                        {selectedProject.case_study_banner && (
+                          <div className="w-full aspect-video overflow-hidden rounded-sm border border-border mb-4">
+                            {isVideo(selectedProject.case_study_banner) ? (
+                              <video src={selectedProject.case_study_banner} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                            ) : (
+                              <img src={selectedProject.case_study_banner} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            )}
+                          </div>
+                        )}
+                        <input type="text" placeholder="Banner Media Link (Image/Video)" value={selectedProject.case_study_banner || ""} onChange={e => setSelectedProject({...selectedProject, case_study_banner: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none focus:border-fg mb-2" />
+                        <input type="file" onChange={e => handleFileUpload(e, 'case_study_banner', 'project')} className="text-[9px] cursor-pointer" />
+                      </div>
+                      <div className="space-y-4">
+                        <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Main Motion Asset (If distinct from banner)</label>
+                        {selectedProject.video && <video src={selectedProject.video} className="w-full aspect-video object-cover rounded-sm border border-border mb-4" autoPlay muted loop playsInline md:aspect-video />}
+                        <input type="text" placeholder="Main Video Link" value={selectedProject.video || ""} onChange={e => setSelectedProject({...selectedProject, video: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none focus:border-fg mb-2" />
+                        <input type="file" onChange={e => handleFileUpload(e, 'video', 'project')} className="text-[9px] cursor-pointer" />
+                      </div>
                     </div>
                   </div>
 
                   {/* Case Study Details */}
                   <div className="p-8 bg-fg/[0.02] border border-border rounded-sm space-y-12">
                     <h3 className="text-[10px] font-bold uppercase tracking-[0.3em]">Full Case Study Content</h3>
+                    
+                    {/* The Directive Section - mapping to longDescription */}
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                          <label className="text-[9px] uppercase tracking-widest text-muted font-bold">The Directive (Long Intro Text)</label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={selectedProject.show_directive !== false} 
+                              onChange={e => setSelectedProject({...selectedProject, show_directive: e.target.checked})}
+                              className="w-3.5 h-3.5 rounded border-border text-fg focus:ring-0" 
+                            />
+                            <span className="text-[8px] uppercase tracking-widest text-muted">Show Section Text</span>
+                          </label>
+                        </div>
+                        <div className="space-y-2">
+                          <textarea 
+                            value={selectedProject.longDescription || ""}
+                            onChange={e => setSelectedProject({...selectedProject, longDescription: e.target.value})}
+                            rows={4}
+                            className="w-full bg-transparent border border-border p-4 focus:outline-none focus:border-fg rounded-sm text-sm"
+                            placeholder="Long introduction text for the case study..."
+                          />
+                        </div>
+                    </div>
+
                     {[
-                      {id: 'overview', label: '01. Overview', media: 'image_overview'},
-                      {id: 'challenge', label: '02. Challenge', media: 'image_challenge'},
-                      {id: 'approach', label: '03. Approach', media: 'image_approach'},
-                      {id: 'execution', label: '04. Execution', media: 'image_execution'},
-                      {id: 'outcome', label: '05. Outcome', media: 'image_outcome'},
+                      {id: 'overview', label: '01. Overview', media: 'image_overview', showKey: 'show_overview'},
+                      {id: 'challenge', label: '02. Challenge', media: 'image_challenge', showKey: 'show_challenge'},
+                      {id: 'approach', label: '03. Approach', media: 'image_approach', showKey: 'show_approach'},
+                      {id: 'execution', label: '04. Execution', media: 'image_execution', showKey: 'show_execution'},
+                      {id: 'outcome', label: '05. Outcome', media: 'image_outcome', showKey: 'show_outcome'},
                     ].map(section => (
                       <div key={section.id} className="space-y-6 pt-12 border-t border-border/20 first:pt-0 first:border-0">
-                        <div className="space-y-2">
+                        <div className="flex justify-between items-center">
                           <label className="text-[9px] uppercase tracking-widest text-muted font-bold">{section.label} Descriptive Text</label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={(selectedProject as any)[section.showKey] !== false} 
+                              onChange={e => setSelectedProject({...selectedProject, [section.showKey]: e.target.checked})}
+                              className="w-3.5 h-3.5 rounded border-border text-fg focus:ring-0" 
+                            />
+                            <span className="text-[8px] uppercase tracking-widest text-muted">Show Section Text</span>
+                          </label>
+                        </div>
+                        <div className="space-y-2">
                           <textarea 
                             value={(selectedProject as any)[section.id]}
                             onChange={e => setSelectedProject({...selectedProject, [section.id]: e.target.value})}
@@ -594,7 +665,7 @@ export default function CMS() {
                     className={`flex-shrink-0 w-32 md:w-full text-left p-3 md:p-4 rounded-sm border transition-all ${selectedLogo?.id === l.id ? 'bg-fg text-bg border-fg' : 'border-border hover:border-fg/50 text-muted'}`}
                   >
                     <div className="text-[9px] md:text-[10px] font-bold uppercase truncate">{l.name}</div>
-                    {l.logo && <img src={l.logo} className="h-3 md:h-4 w-auto object-contain mt-3 grayscale opacity-40 mx-auto" referrerPolicy="no-referrer" />}
+                    {l.logo && <img src={l.logo} className="h-4 md:h-5 w-auto object-contain mt-3 grayscale opacity-40 mx-auto" referrerPolicy="no-referrer" />}
                   </button>
                 ))}
               </div>
@@ -619,11 +690,11 @@ export default function CMS() {
                             <input type="file" onChange={e => handleFileUpload(e, 'logo', 'client')} className="text-[8px] opacity-40 hover:opacity-100 transition-opacity" />
                           </div>
                         </div>
-                        <div className="w-24 h-24 md:w-32 md:h-32 bg-fg flex items-center justify-center rounded-sm">
+                        <div className="w-24 h-24 md:w-32 md:h-32 bg-bg border border-border flex items-center justify-center rounded-sm">
                           {selectedLogo.logo ? (
-                            <img src={selectedLogo.logo} className="w-16 h-16 md:w-20 md:h-20 object-contain brightness-0 invert" referrerPolicy="no-referrer" />
+                            <img src={selectedLogo.logo} className="w-16 h-16 md:w-20 md:h-20 object-contain grayscale" referrerPolicy="no-referrer" />
                           ) : (
-                            <span className="text-[8px] text-bg uppercase font-bold tracking-widest">Logo Preivew</span>
+                            <span className="text-[8px] text-muted uppercase font-bold tracking-widest text-center px-4">Logo Preview</span>
                           )}
                         </div>
                       </div>
@@ -832,7 +903,7 @@ export default function CMS() {
               <div className="flex justify-between items-center border-b border-border pb-4">
                 <h3 className="text-[10px] font-bold uppercase tracking-[0.3em]">Services Page Content</h3>
                 <button 
-                  onClick={() => saveSiteContent(['services_banner_text', 'services_banner_link', 'services_banner_active', 'services_banner_image', 'service_image_brand', 'service_image_art', 'service_image_ai'])}
+                  onClick={() => saveSiteContent(['services_banner_text', 'services_banner_link', 'services_banner_active', 'services_banner_image', 'service_image_brand', 'service_image_art', 'service_image_storytelling', 'service_image_ai', 'service_image_ai_film', 'service_image_movie', 'service_image_product'])}
                   className="px-6 py-2 bg-fg text-bg rounded-sm text-[9px] font-bold uppercase tracking-widest hover:opacity-90 transition-opacity"
                 >Save Section</button>
               </div>
@@ -907,7 +978,17 @@ export default function CMS() {
                       <input type="file" onChange={e => handleFileUpload(e, 'service_image_art', 'about')} className="text-[9px]" />
                     </div>
                     <div className="space-y-4">
-                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">AI Creative Image</label>
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Storytelling KVs Image</label>
+                      {siteContent['service_image_storytelling'] && (
+                        <div className="aspect-[4/3] overflow-hidden rounded-sm border border-border">
+                          <img src={siteContent['service_image_storytelling']} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        </div>
+                      )}
+                      <input type="text" value={siteContent['service_image_storytelling'] || ""} onChange={e => setSiteContent({...siteContent, service_image_storytelling: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none" placeholder="Image URL" />
+                      <input type="file" onChange={e => handleFileUpload(e, 'service_image_storytelling', 'about')} className="text-[9px]" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">AI Art Direction Image</label>
                       {siteContent['service_image_ai'] && (
                         <div className="aspect-[4/3] overflow-hidden rounded-sm border border-border">
                           <img src={siteContent['service_image_ai']} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -915,6 +996,36 @@ export default function CMS() {
                       )}
                       <input type="text" value={siteContent['service_image_ai'] || ""} onChange={e => setSiteContent({...siteContent, service_image_ai: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none" placeholder="Image URL" />
                       <input type="file" onChange={e => handleFileUpload(e, 'service_image_ai', 'about')} className="text-[9px]" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">AI Filmmaking Image</label>
+                      {siteContent['service_image_ai_film'] && (
+                        <div className="aspect-[4/3] overflow-hidden rounded-sm border border-border">
+                          <img src={siteContent['service_image_ai_film']} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        </div>
+                      )}
+                      <input type="text" value={siteContent['service_image_ai_film'] || ""} onChange={e => setSiteContent({...siteContent, service_image_ai_film: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none" placeholder="Image URL" />
+                      <input type="file" onChange={e => handleFileUpload(e, 'service_image_ai_film', 'about')} className="text-[9px]" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Movie & Music Art Image</label>
+                      {siteContent['service_image_movie'] && (
+                        <div className="aspect-[4/3] overflow-hidden rounded-sm border border-border">
+                          <img src={siteContent['service_image_movie']} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        </div>
+                      )}
+                      <input type="text" value={siteContent['service_image_movie'] || ""} onChange={e => setSiteContent({...siteContent, service_image_movie: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none" placeholder="Image URL" />
+                      <input type="file" onChange={e => handleFileUpload(e, 'service_image_movie', 'about')} className="text-[9px]" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Product Photography Image</label>
+                      {siteContent['service_image_product'] && (
+                        <div className="aspect-[4/3] overflow-hidden rounded-sm border border-border">
+                          <img src={siteContent['service_image_product']} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        </div>
+                      )}
+                      <input type="text" value={siteContent['service_image_product'] || ""} onChange={e => setSiteContent({...siteContent, service_image_product: e.target.value})} className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none" placeholder="Image URL" />
+                      <input type="file" onChange={e => handleFileUpload(e, 'service_image_product', 'about')} className="text-[9px]" />
                     </div>
                   </div>
                 </div>

@@ -21,6 +21,14 @@ export interface Project {
   image_execution?: string;
   image_outcome?: string;
   hover_video?: string;
+  case_study_banner?: string;
+  longDescription?: string;
+  show_directive?: boolean;
+  show_overview?: boolean;
+  show_challenge?: boolean;
+  show_approach?: boolean;
+  show_execution?: boolean;
+  show_outcome?: boolean;
 }
 
 export interface HeroMedia {
