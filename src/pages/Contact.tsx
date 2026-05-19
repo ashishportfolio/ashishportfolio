@@ -38,7 +38,7 @@ export default function Contact() {
 
       // Send email notification
       try {
-        await fetch('/api/send-email', {
+        const emailRes = await fetch('/api/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -51,6 +51,11 @@ export default function Contact() {
             }
           })
         });
+
+        if (!emailRes.ok) {
+          const errorData = await emailRes.json();
+          console.error('Email API Error:', errorData);
+        }
       } catch (emailErr) {
         console.error('Failed to send email notification:', emailErr);
       }
