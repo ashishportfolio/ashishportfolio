@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { SERVICES } from '../data/projects';
+import { Mail, Phone, Linkedin } from 'lucide-react';
 import Hero from '../components/Hero';
 import Button from '../components/Button';
 import ProjectCard from '../components/ProjectCard';
@@ -331,8 +332,8 @@ export default function Home() {
       <section className="featured-works-section relative z-10 py-10 lg:py-14 bg-bg">
         <div className="absolute inset-0 bg-fg pointer-events-none opacity-0 z-0" id="work-bg-flash" />
         
-        <div className="w-full px-6 md:px-[8%] mb-8 lg:mb-12 flex justify-between items-end relative z-10">
-          <div className="w-full">
+        <div className="w-full px-6 md:px-[8%] mb-8 lg:mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
+          <div className="max-w-2xl">
             <Reveal multiplier={2.34} type="fade" className="mb-3 block">
               <span className="text-[9px] capitalize tracking-[0.2em] text-muted block">Case Studies / Volume 01</span>
             </Reveal>
@@ -340,6 +341,12 @@ export default function Home() {
               Featured Projects
             </Reveal>
           </div>
+          
+          <Reveal multiplier={2.34} type="fade" delay={0.4}>
+            <Button to="/work" className="min-w-[140px] md:min-w-[180px]">
+              View All Projects
+            </Button>
+          </Reveal>
         </div>
         
         <div className="flex flex-col gap-6 md:gap-10 relative z-10 px-6 md:px-[8%]">
@@ -356,7 +363,7 @@ export default function Home() {
         <section className="relative z-20 bg-bg py-10 lg:py-14 overflow-hidden text-center lg:text-left">
           <div className="w-full px-6 md:px-[8%] mb-8 lg:mb-10 relative z-10">
             <Reveal multiplier={2.34} type="fade" className="mb-3 block">
-              <span className="text-[9px] capitalize tracking-[0.2em] text-muted block">Visual Repository</span>
+              <span className="text-[9px] capitalize tracking-[0.2em] text-muted block">Visual Repository / Motion & Still</span>
             </Reveal>
             <Reveal multiplier={2.34} type="text" className="text-2xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-[1.1]">
               The Archive
@@ -436,18 +443,20 @@ export default function Home() {
           </Reveal>
           
           <Reveal multiplier={1.5} type="fade" delay={0.3} className="mb-12">
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+            <div className="flex flex-wrap justify-center gap-x-12 gap-y-6">
               <a 
                 href={`mailto:${siteContent['contact_email'] || 'hello@ashishguptaa.com'}`}
-                className="text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-0.5"
+                className="flex items-center gap-3 text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-1"
               >
-                {siteContent['contact_email'] || 'hello@ashishguptaa.com'}
+                <Mail size={16} className="text-[#FF4D00]" />
+                <span>{siteContent['contact_email'] || 'hello@ashishguptaa.com'}</span>
               </a>
               <a 
                 href={`tel:${siteContent['contact_phone'] || '+918866138571'}`}
-                className="text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-0.5"
+                className="flex items-center gap-3 text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-1"
               >
-                {siteContent['contact_phone'] || '+91 88661 38571'}
+                <Phone size={16} className="text-[#FF4D00]" />
+                <span>{siteContent['contact_phone'] || '+91 88661 38571'}</span>
               </a>
             </div>
           </Reveal>

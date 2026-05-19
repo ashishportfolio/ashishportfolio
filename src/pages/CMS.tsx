@@ -1068,50 +1068,104 @@ export default function CMS() {
               <div className="flex justify-between items-center border-b border-border pb-4">
                 <h3 className="text-[10px] font-bold uppercase tracking-[0.3em]">Contact Page Content</h3>
                 <button 
-                  onClick={() => saveSiteContent(['contact_title', 'contact_email', 'contact_phone', 'contact_address'])}
+                  onClick={() => saveSiteContent(['contact_title', 'contact_email', 'contact_phone', 'contact_address', 'contact_banner_text', 'contact_banner_link', 'contact_banner_active', 'contact_banner_image'])}
                   className="px-6 py-2 bg-fg text-bg rounded-sm text-[9px] font-bold uppercase tracking-widest hover:opacity-90 transition-opacity"
                 >Save Section</button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                 <div className="space-y-2">
-                  <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Title Overlay</label>
-                  <input 
-                    type="text" 
-                    value={siteContent['contact_title'] || ""} 
-                    onChange={e => setSiteContent({...siteContent, contact_title: e.target.value})} 
-                    className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
-                    placeholder="LET'S CONNECT"
-                  />
+              <div className="grid grid-cols-1 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                   <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Title Overlay</label>
+                    <input 
+                      type="text" 
+                      value={siteContent['contact_title'] || ""} 
+                      onChange={e => setSiteContent({...siteContent, contact_title: e.target.value})} 
+                      className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
+                      placeholder="LET'S CONNECT"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Email</label>
+                    <input 
+                      type="text" 
+                      value={siteContent['contact_email'] || ""} 
+                      onChange={e => setSiteContent({...siteContent, contact_email: e.target.value})} 
+                      className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
+                      placeholder="hello@ashishguptaa.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Phone</label>
+                    <input 
+                      type="text" 
+                      value={siteContent['contact_phone'] || ""} 
+                      onChange={e => setSiteContent({...siteContent, contact_phone: e.target.value})} 
+                      className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
+                      placeholder="+91-88661 38571"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Address / Location</label>
+                    <input 
+                      type="text" 
+                      value={siteContent['contact_address'] || ""} 
+                      onChange={e => setSiteContent({...siteContent, contact_address: e.target.value})} 
+                      className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
+                      placeholder="Ahmedabad, India"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Email</label>
-                  <input 
-                    type="text" 
-                    value={siteContent['contact_email'] || ""} 
-                    onChange={e => setSiteContent({...siteContent, contact_email: e.target.value})} 
-                    className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
-                    placeholder="hello@ashishguptaa.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Phone</label>
-                  <input 
-                    type="text" 
-                    value={siteContent['contact_phone'] || ""} 
-                    onChange={e => setSiteContent({...siteContent, contact_phone: e.target.value})} 
-                    className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
-                    placeholder="+91-88661 38571"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Contact Address / Location</label>
-                  <input 
-                    type="text" 
-                    value={siteContent['contact_address'] || ""} 
-                    onChange={e => setSiteContent({...siteContent, contact_address: e.target.value})} 
-                    className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
-                    placeholder="Ahmedabad, India"
-                  />
+
+                <div className="pt-8 border-t border-border/20 space-y-6">
+                  <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#FF4D00]">Contact Page Banner</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <input 
+                        type="checkbox" 
+                        id="contact_banner_active"
+                        checked={siteContent['contact_banner_active'] === 'true'} 
+                        onChange={e => setSiteContent({...siteContent, contact_banner_active: e.target.checked ? 'true' : 'false'})} 
+                        className="w-4 h-4 rounded border-border text-fg focus:ring-0"
+                      />
+                      <label htmlFor="contact_banner_active" className="text-[9px] uppercase tracking-widest text-muted font-bold cursor-pointer">Activate Top Banner</label>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Banner Text (Optional)</label>
+                      <input 
+                        type="text" 
+                        value={siteContent['contact_banner_text'] || ""} 
+                        onChange={e => setSiteContent({...siteContent, contact_banner_text: e.target.value})} 
+                        className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
+                        placeholder="e.g. FREE 15 MIN STRATEGY SESSION — BOOK NOW"
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Banner Image (Optional)</label>
+                      {siteContent['contact_banner_image'] && (
+                        <div className="w-full h-12 overflow-hidden rounded-sm border border-border">
+                          <img src={siteContent['contact_banner_image']} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        </div>
+                      )}
+                      <input 
+                        type="text" 
+                        value={siteContent['contact_banner_image'] || ""} 
+                        onChange={e => setSiteContent({...siteContent, contact_banner_image: e.target.value})} 
+                        className="w-full bg-transparent border-b border-border py-2 text-xs focus:outline-none focus:border-fg" 
+                        placeholder="Direct Image URL"
+                      />
+                      <input type="file" onChange={e => handleFileUpload(e, 'contact_banner_image', 'about')} className="text-[9px]" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-widest text-muted font-bold">Banner Link (URL)</label>
+                      <input 
+                        type="text" 
+                        value={siteContent['contact_banner_link'] || ""} 
+                        onChange={e => setSiteContent({...siteContent, contact_banner_link: e.target.value})} 
+                        className="w-full bg-transparent border-b border-border py-2 focus:outline-none focus:border-fg text-sm transition-colors" 
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

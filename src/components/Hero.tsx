@@ -53,8 +53,8 @@ export default function Hero() {
       </div>
 
       {/* Text Layer - Repositioned for mobile to avoid overlap */}
-      <div className="absolute inset-0 flex items-start md:items-center justify-center z-20 pointer-events-none py-24 md:py-0">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10 px-[6%] md:px-[8%] pointer-events-auto items-center">
+      <div className="absolute inset-0 flex items-start md:items-center justify-center z-20 pointer-events-none pt-32 pb-20 md:py-0">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-10 px-[6%] md:px-[8%] pointer-events-auto items-center">
           {/* Left Heading */}
           <div className="flex flex-col justify-center items-center md:items-start text-center md:text-left md:pl-12">
             <motion.div
@@ -79,9 +79,9 @@ export default function Hero() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
-              className="max-w-[240px] md:max-w-[280px] opacity-80"
+              className="max-w-[280px] md:max-w-[320px] opacity-80"
             >
-              <p className="text-[10px] md:text-[12px] font-sans leading-[1.6] text-muted font-normal">
+              <p className="text-[11.5px] md:text-[14px] font-sans leading-[1.6] text-muted font-normal">
                 For brands, founders, agencies, and filmmakers looking to turn ideas into strong visual stories.
                 From identity design and campaign art direction to AI visuals, product imagery, music videos,
                 and cinematic storytelling - let’s build something remarkable.

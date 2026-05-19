@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Mail, Phone, Linkedin } from 'lucide-react';
 import ImageReveal from '../components/ImageReveal';
 import Button from '../components/Button';
 import Reveal from '../components/Reveal';
@@ -35,7 +36,7 @@ export default function About() {
 
   return (
     <div className="pt-24 lg:pt-32 pb-12 lg:pb-16 bg-bg overflow-x-hidden text-center lg:text-left">
-      <div className="w-full px-6 md:px-[8%] mb-16 lg:mb-24">
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-[8%] mb-16 lg:mb-24">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start">
           <div className="md:col-span-7 space-y-8 flex flex-col items-center lg:items-start">
             <Reveal type="fade">
@@ -50,7 +51,7 @@ export default function About() {
               </span>
             </Reveal>
             <Reveal type="fade" delay={0.3}>
-              <div className="max-w-xl text-xs md:text-sm text-muted space-y-4 text-balance">
+              <div className="max-w-xl text-[13px] md:text-sm text-muted space-y-5 text-pretty md:text-justify leading-relaxed">
                 <p>
                   Ashish Guptaa is an Ex-Ogilvy Art Director, Brand Identity Designer, and AI Visual Storyteller
                   from India, with 7+ years of professional experience and over 10 years of creative practice.
@@ -96,11 +97,13 @@ export default function About() {
             </div>
           </div>
         </div>
+      </div>
 
       <ProcessSection />
 
       {/* Clients */}
-      <section className="mt-12 lg:mt-16 pt-12 lg:pt-16 border-t border-border px-6 md:px-[8%]">
+      <section className="mt-12 lg:mt-16 pt-12 lg:pt-16 border-t border-border bg-bg">
+        <div className="max-w-7xl mx-auto px-6 md:px-[8%]">
           <div className="w-full mb-10">
             <Reveal type="glitch" className="text-[10px] uppercase tracking-[0.5em] font-bold">Trusted Partners ({logos.length.toString().padStart(2, '0')})</Reveal>
           </div>
@@ -131,11 +134,12 @@ export default function About() {
               <span className="text-[10px] uppercase tracking-widest text-muted">Partnering with ambitious brands globally...</span>
             </div>
           )}
-        </section>
+        </div>
+      </section>
 
         {/* Let's build something collective section */}
-        <section className="relative z-10 py-12 lg:py-16 px-6 md:px-[8%] bg-bg text-fg overflow-hidden border-t border-border mt-16 lg:mt-24">
-          <div className="w-full relative z-10 mx-auto flex flex-col items-center text-center">
+        <section className="relative z-10 py-12 lg:py-16 bg-bg text-fg overflow-hidden border-t border-border mt-16 lg:mt-24">
+          <div className="max-w-7xl mx-auto px-6 md:px-[8%] relative z-10 flex flex-col items-center text-center">
             <Reveal multiplier={1.5} type="fade" className="block mb-6">
               <span className="text-[10px] font-sans font-bold tracking-[0.2em] text-muted capitalize">Let's build something collective</span>
             </Reveal>
@@ -148,18 +152,20 @@ export default function About() {
             </Reveal>
             
             <Reveal multiplier={1.5} type="fade" delay={0.3} className="mb-12">
-              <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+              <div className="flex flex-wrap justify-center gap-x-12 gap-y-6">
                 <a 
                   href={`mailto:${siteContent['contact_email'] || 'hello@ashishguptaa.com'}`}
-                  className="text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-0.5"
+                  className="flex items-center gap-3 text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-1"
                 >
-                  {siteContent['contact_email'] || 'hello@ashishguptaa.com'}
+                  <Mail size={16} className="text-[#FF4D00]" />
+                  <span>{siteContent['contact_email'] || 'hello@ashishguptaa.com'}</span>
                 </a>
                 <a 
                   href={`tel:${siteContent['contact_phone'] || '+918866138571'}`}
-                  className="text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-0.5"
+                  className="flex items-center gap-3 text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-1"
                 >
-                  {siteContent['contact_phone'] || '+91 88661 38571'}
+                  <Phone size={16} className="text-[#FF4D00]" />
+                  <span>{siteContent['contact_phone'] || '+91 88661 38571'}</span>
                 </a>
               </div>
             </Reveal>
@@ -170,6 +176,5 @@ export default function About() {
           </div>
         </section>
       </div>
-    </div>
   );
 }

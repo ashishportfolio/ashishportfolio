@@ -4,6 +4,7 @@
  */
 
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Mail, Phone, Linkedin } from 'lucide-react';
 import SmoothScroll from './components/SmoothScroll';
 import Navbar from './components/Navbar';
 import Feather from './components/Feather';
@@ -41,37 +42,46 @@ function AppContent() {
         </Routes>
       </main>
       
-      <footer className="px-6 md:px-[8%] py-10 lg:py-14 border-t border-border flex flex-col md:flex-row justify-between items-center lg:items-start gap-12 bg-bg relative z-10 text-center lg:text-left">
-        <div className="flex flex-col gap-3">
-          <span className="text-xl font-display font-medium tracking-tighter capitalize">Ashish Guptaa — Art Director</span>
-          <span className="text-[9px] font-sans tracking-[0.1em] text-muted capitalize">Crafted With Precision — Based in India</span>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 md:gap-16">
-          <div className="flex flex-col gap-3">
-            <span className="text-[9px] font-sans tracking-[0.1em] text-muted capitalize">Navigation</span>
-            <div className="flex flex-col gap-2 text-[11px] font-sans tracking-[0.05em] capitalize whitespace-nowrap">
-              <Link to="/" className="hover:opacity-60 transition-opacity">Home</Link>
-              <Link to="/about" className="hover:opacity-60 transition-opacity">About</Link>
-              <Link to="/services" className="hover:opacity-60 transition-opacity">Services</Link>
-              <Link to="/contact" className="hover:opacity-60 transition-opacity">Contact</Link>
-            </div>
+      <footer className="w-full max-w-7xl mx-auto px-6 md:px-[8%] py-10 lg:py-14 border-t border-border bg-bg relative z-10">
+        <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-20">
+          <div className="flex flex-col gap-3 text-center lg:text-left">
+            <span className="text-xl font-display font-medium tracking-tighter capitalize">Ashish Guptaa — Art Director</span>
           </div>
-          <div className="flex flex-col gap-3">
-            <span className="text-[9px] font-sans tracking-[0.1em] text-muted capitalize">Contact</span>
-            <div className="flex flex-col gap-2 text-[11px] font-sans tracking-[0.05em] lowercase break-all">
-              <a href={`mailto:${siteContent['contact_email'] || 'hello@ashishguptaa.com'}`} className="hover:opacity-60 transition-opacity">
-                {siteContent['contact_email'] || 'hello@ashishguptaa.com'}
-              </a>
-              <a href={`tel:${siteContent['contact_phone'] || '+918866138571'}`} className="hover:opacity-60 transition-opacity">
-                {siteContent['contact_phone'] || '+91-88661 38571'}
-              </a>
+          
+          <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-10 md:gap-16 lg:gap-24 text-center sm:text-left">
+            <div className="flex flex-col gap-3 lg:items-end lg:text-right">
+              <span className="text-[9px] font-sans tracking-[0.1em] text-muted capitalize">Navigation</span>
+              <div className="flex flex-col gap-2 text-[11px] font-sans tracking-[0.05em] capitalize whitespace-nowrap lg:items-end">
+                <Link to="/" className="hover:opacity-60 transition-opacity">Home</Link>
+                <Link to="/about" className="hover:opacity-60 transition-opacity">About</Link>
+                <Link to="/services" className="hover:opacity-60 transition-opacity">Services</Link>
+                <Link to="/contact" className="hover:opacity-60 transition-opacity">Contact</Link>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-3">
-            <span className="text-[9px] font-sans tracking-[0.1em] text-muted capitalize">Social</span>
-            <div className="flex flex-col gap-2 text-[11px] font-sans tracking-[0.05em] capitalize">
-              <a href="https://www.linkedin.com/in/ashishhgupta/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity">LinkedIn</a>
-              <Link to="/cms" className="mt-2 hover:opacity-60 transition-opacity opacity-30">Admin CMS</Link>
+
+            <div className="flex flex-col gap-3 lg:items-end lg:text-right">
+              <span className="text-[9px] font-sans tracking-[0.1em] text-muted capitalize">Contact</span>
+              <div className="flex flex-col gap-2 text-[11px] font-sans tracking-[0.05em] lowercase break-all lg:items-end">
+                <a href={`mailto:${siteContent['contact_email'] || 'hello@ashishguptaa.com'}`} className="hover:opacity-60 transition-opacity flex items-center gap-2 justify-center sm:justify-start lg:justify-end lg:flex-row-reverse">
+                  <Mail size={10} className="text-muted" />
+                  <span>{siteContent['contact_email'] || 'hello@ashishguptaa.com'}</span>
+                </a>
+                <a href={`tel:${siteContent['contact_phone'] || '+918866138571'}`} className="hover:opacity-60 transition-opacity flex items-center gap-2 justify-center sm:justify-start lg:justify-end lg:flex-row-reverse">
+                  <Phone size={10} className="text-muted" />
+                  <span>{siteContent['contact_phone'] || '+91-88661 38571'}</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 lg:items-end lg:text-right">
+              <span className="text-[9px] font-sans tracking-[0.1em] text-muted capitalize">Social</span>
+              <div className="flex flex-col gap-2 text-[11px] font-sans tracking-[0.05em] capitalize lg:items-end">
+                <a href="https://www.linkedin.com/in/ashishhgupta/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity flex items-center gap-2 justify-center sm:justify-start lg:justify-end lg:flex-row-reverse">
+                  <Linkedin size={10} className="text-muted" />
+                  <span>LinkedIn</span>
+                </a>
+                <Link to="/cms" className="mt-2 hover:opacity-60 transition-opacity opacity-30">Admin CMS</Link>
+              </div>
             </div>
           </div>
         </div>

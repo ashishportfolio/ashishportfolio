@@ -163,7 +163,7 @@ export default function CaseStudy() {
           {project.show_directive !== false && (
             <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start border-b border-black/5 pb-8 md:pb-12">
               <div className="w-full">
-                <Reveal type="text" className="text-xl md:text-2xl font-display font-medium text-black/80 leading-[1.4] tracking-tight max-w-4xl">
+                <Reveal type="text" className="text-xl md:text-2xl font-display font-medium text-black/80 leading-[1.4] tracking-tight w-full text-justify">
                   {project.longDescription}
                 </Reveal>
               </div>
@@ -229,7 +229,7 @@ export default function CaseStudy() {
               {/* Text Second - Closer to image */}
               {section.show !== false && section.content && (
                 <div className="w-full">
-                  <Reveal type="text" className="text-lg md:text-xl font-display font-medium text-black leading-[1.5] tracking-tight max-w-4xl">
+                  <Reveal type="text" className="text-lg md:text-xl font-display font-medium text-black leading-[1.5] tracking-tight w-full text-justify">
                     {section.content}
                   </Reveal>
                 </div>
