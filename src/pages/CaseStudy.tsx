@@ -7,6 +7,7 @@ import Reveal from '../components/Reveal';
 import { supabase } from '../lib/supabase';
 import { Project } from '../types';
 import { isVideo } from '../lib/utils';
+import VideoPlayer from '../components/VideoPlayer';
 
 export default function CaseStudy() {
   const { slug } = useParams();
@@ -209,10 +210,9 @@ export default function CaseStudy() {
                 <Reveal type="pixel" className="w-full">
                   <div className="aspect-[16/9] overflow-hidden rounded-[14px] md:rounded-[32px] bg-[#f4f4f4]">
                     {isVideo(section.image) ? (
-                      <video 
+                      <VideoPlayer 
                         src={section.image} 
-                        autoPlay muted loop playsInline
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
                       />
                     ) : (
                       <img 
