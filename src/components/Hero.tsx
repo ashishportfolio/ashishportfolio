@@ -35,13 +35,13 @@ export default function Hero() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="relative w-full h-full flex items-end justify-center pointer-events-auto max-w-[1700px] lg:translate-x-20"
+          className="relative w-full h-full flex items-end justify-center pointer-events-auto max-w-[1700px] lg:translate-x-6"
         >
           {heroImage ? (
             <img 
               src={heroImage} 
               alt="Ashish Guptaa" 
-              className="w-auto h-full max-h-full object-contain object-bottom grayscale hover:grayscale-0 transition-all duration-1000 select-none block"
+              className="w-auto h-full max-h-full object-contain object-bottom select-none block"
               referrerPolicy="no-referrer"
             />
           ) : (
