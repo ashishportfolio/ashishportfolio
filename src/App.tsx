@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Mail, Phone, Linkedin, Instagram, Globe } from 'lucide-react';
 import SmoothScroll from './components/SmoothScroll';
 import Navbar from './components/Navbar';
@@ -22,6 +23,24 @@ import BookingModal from './components/BookingModal';
 
 function AppContent() {
   const { siteContent } = useSiteContext();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Hide scrollbar on the main user pages, but keep it active for the Admin CMS
+    const isCMS = location.pathname.startsWith('/cms');
+    if (!isCMS) {
+      document.documentElement.classList.add('no-scrollbar');
+      document.body.classList.add('no-scrollbar');
+    } else {
+      document.documentElement.classList.remove('no-scrollbar');
+      document.body.classList.remove('no-scrollbar');
+    }
+
+    return () => {
+      document.documentElement.classList.remove('no-scrollbar');
+      document.body.classList.remove('no-scrollbar');
+    };
+  }, [location.pathname]);
 
   const sansFont = siteContent['theme_font_sans'] || 'Oxygen';
   const displayFont = siteContent['theme_font_display'] || 'Syne';

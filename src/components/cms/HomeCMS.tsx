@@ -9,7 +9,7 @@ interface HomeCMSProps {
 
 export default function HomeCMS({ siteContent, setSiteContent, saveSiteContent, handleFileUpload }: HomeCMSProps) {
   const homeKeys = [
-    'hero_heading', 'hero_sub_copy', 'hero_paragraph', 'hero_center_image',
+    'hero_heading', 'hero_sub_copy', 'hero_paragraph', 'hero_center_image', 'hero_layout_style',
     'home_profile_headline', 'home_col1_title', 'home_col1_desc', 'home_col2_title', 'home_col2_desc',
     'home_services_heading', 'services_intro',
     'home_service_0_title', 'home_service_0_category',
@@ -110,6 +110,40 @@ export default function HomeCMS({ siteContent, setSiteContent, saveSiteContent, 
                 rows={5}
                 placeholder="For brands, founders, agencies..."
               />
+            </div>
+
+            <div className="space-y-3 pt-3 border-t border-border/20">
+              <label className="text-[9px] uppercase tracking-widest text-muted font-bold block">Hero Visual Layout Style</label>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <label className="inline-flex items-center gap-2 cursor-pointer group">
+                  <input 
+                    type="radio" 
+                    name="hero_layout_style" 
+                    value="portrait" 
+                    checked={(siteContent['hero_layout_style'] || 'portrait') === 'portrait'} 
+                    onChange={e => setSiteContent({ ...siteContent, hero_layout_style: e.target.value })}
+                    className="accent-[#FF4D00]" 
+                  />
+                  <div className="text-xs text-fg">
+                    <span className="font-bold">Option A: Center Portrait</span>
+                    <span className="text-[10px] text-muted block lowercase mt-0.5">Classic portrait focused layout</span>
+                  </div>
+                </label>
+                <label className="inline-flex items-center gap-2 cursor-pointer group">
+                  <input 
+                    type="radio" 
+                    name="hero_layout_style" 
+                    value="full_banner" 
+                    checked={siteContent['hero_layout_style'] === 'full_banner'} 
+                    onChange={e => setSiteContent({ ...siteContent, hero_layout_style: e.target.value })}
+                    className="accent-[#FF4D00]" 
+                  />
+                  <div className="text-xs text-fg">
+                    <span className="font-bold">Option B: Full Background Banner</span>
+                    <span className="text-[10px] text-muted block lowercase mt-0.5 font-sans">Full-width immersive artwork layout</span>
+                  </div>
+                </label>
+              </div>
             </div>
           </div>
         </div>

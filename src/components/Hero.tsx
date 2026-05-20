@@ -23,38 +23,68 @@ export default function Hero() {
   }, []);
 
   const heroImage = siteContent['hero_center_image'] || aboutData?.image;
+  const isFullBanner = siteContent['hero_layout_style'] === 'full_banner';
 
   return (
     <section className="relative h-[82vh] sm:h-[85vh] md:h-[88vh] lg:h-screen min-h-[580px] sm:min-h-[660px] md:min-h-[750px] lg:min-h-0 w-full bg-white p-4 md:p-6 overflow-hidden">
       {/* Grey Rounded Container - Scale down corner radius on mobile */}
-      <div className="absolute inset-x-4 top-4 sm:top-8 bottom-4 sm:bottom-6 bg-[#EAEAEA] rounded-[32px] md:rounded-[64px] pointer-events-none" />
-
-      {/* Image Layer - Styled for Bottom on Mobile/Tablet and Center on Desktop */}
-      <div className="absolute inset-x-4 bottom-4 sm:bottom-6 top-[45%] sm:top-[42%] md:top-[40%] lg:top-8 flex justify-center items-end pointer-events-none z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="relative w-full h-full flex items-end justify-center pointer-events-auto max-w-[1700px] lg:translate-x-6"
-        >
-          {heroImage ? (
+      <div className={`absolute pointer-events-none overflow-hidden text-clip transition-all duration-500 ${
+        isFullBanner 
+          ? 'inset-x-0 top-0 bottom-0 rounded-none lg:inset-x-4 lg:top-4 lg:bottom-6 lg:rounded-[64px] bg-[#EAEAEA]' 
+          : 'inset-x-4 top-4 sm:top-8 bottom-4 sm:bottom-6 bg-[#EAEAEA] rounded-[32px] md:rounded-[64px]'
+      }`}>
+        {isFullBanner && heroImage && (
+          <div className="absolute inset-0 w-full h-full">
             <img 
               src={heroImage} 
-              alt="Ashish Guptaa" 
-              className="w-auto h-full max-h-full object-contain object-bottom select-none block"
+              alt="Ashish Guptaa Portrait Background" 
+              className="w-full h-full object-cover object-center select-none block"
               referrerPolicy="no-referrer"
             />
-          ) : (
-            <div className="w-full h-24 sm:h-32 bg-muted/5 animate-pulse flex items-center justify-center rounded-2xl">
-              <span className="text-[10px] uppercase tracking-widest text-muted">Awaiting Main Portrait...</span>
-            </div>
-          )}
-        </motion.div>
+          </div>
+        )}
       </div>
 
-      {/* Text Layer - Shifted slightly down on mobile, top-aligned on mobile/tablet and centered on desktop */}
-      <div className="absolute inset-x-4 top-4 sm:top-8 bottom-[45%] sm:bottom-[42%] md:bottom-[40%] lg:bottom-6 flex items-start lg:items-center justify-center z-20 pointer-events-none pt-[55px] sm:pt-[75px] md:pt-[100px] lg:pt-0">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 px-[6%] md:px-[7.2%] pointer-events-auto items-center">
+      {/* Image Layer - Styled for Bottom on Mobile/Tablet and Center on Desktop */}
+      {!isFullBanner && (
+        <div className="absolute inset-x-4 bottom-4 sm:bottom-6 top-[45%] sm:top-[42%] md:top-[40%] lg:top-8 flex justify-center items-end pointer-events-none z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            className="relative w-full h-full flex items-end justify-center pointer-events-auto max-w-[1700px] lg:translate-x-6"
+          >
+            {heroImage ? (
+              <img 
+                src={heroImage} 
+                alt="Ashish Guptaa" 
+                className="w-auto h-full max-h-full object-contain object-bottom select-none block"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-full h-24 sm:h-32 bg-muted/5 animate-pulse flex items-center justify-center rounded-2xl">
+                <span className="text-[10px] uppercase tracking-widest text-muted">Awaiting Main Portrait...</span>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
+
+      {/* Text Layer - Shifted completely to bottom on mobile/tablet for full banner layout with very little bottom margin */}
+      <div className={`absolute inset-x-4 top-4 sm:top-8 ${
+        isFullBanner 
+          ? 'bottom-2 sm:bottom-4 md:bottom-5 lg:bottom-6' 
+          : 'bottom-[45%] sm:bottom-[42%] md:bottom-[40%] lg:bottom-6'
+      } flex ${
+        isFullBanner ? 'items-end' : 'items-start'
+      } lg:items-center justify-center z-20 pointer-events-none ${
+        isFullBanner 
+          ? 'pt-0 pb-2 sm:pb-3 md:pb-4 lg:pb-0' 
+          : 'pt-[55px] sm:pt-[75px] md:pt-[100px] lg:pt-0'
+      }`}>
+        <div className={`w-full grid grid-cols-1 lg:grid-cols-3 ${
+          isFullBanner ? 'gap-3 sm:gap-4 lg:gap-10' : 'gap-6 md:gap-8 lg:gap-10'
+        } px-[6%] md:px-[7.2%] pointer-events-auto items-center`}>
           {/* Left Heading */}
           <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
             <motion.div
@@ -62,26 +92,28 @@ export default function Hero() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[4.5vw] font-display font-bold tracking-tighter leading-[0.85] text-fg mb-3 sm:mb-4">
+              <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-[4.5vw] font-display font-bold tracking-tighter leading-[0.85] mb-3 sm:mb-4 ${isFullBanner ? 'text-white' : 'text-fg'}`}>
                 {siteContent['hero_heading'] || "Ashish Guptaa"}
               </h1>
-              <p className="text-[10px] sm:text-[11px] lg:text-[12px] font-sans font-bold tracking-[0.2em] uppercase text-fg opacity-90">
+              <p className={`text-[10px] sm:text-[11px] lg:text-[12px] font-sans font-bold tracking-[0.2em] uppercase ${isFullBanner ? 'text-white/95' : 'text-fg opacity-90'}`}>
                 {siteContent['hero_sub_copy'] || "Ex-Ogilvy Art Director | Brand Designer | AI Visual Storyteller"}
               </p>
             </motion.div>
           </div>
-
+ 
           <div className="hidden lg:block" /> {/* Spacer for portrait */}
-
+ 
           {/* Right Column: Description for both mobile and tablet */}
-          <div className="flex flex-col justify-center items-center lg:items-end text-center lg:text-left max-lg:mt-3 sm:max-lg:mt-4">
+          <div className={`flex flex-col justify-center items-center lg:items-end text-center lg:text-left ${
+            isFullBanner ? 'max-lg:mt-1 sm:max-lg:mt-2' : 'max-lg:mt-3 sm:max-lg:mt-4'
+          }`}>
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
-              className="max-w-[280px] sm:max-w-[340px] md:max-w-[420px] lg:max-w-[320px] opacity-80"
+              className="max-w-[280px] sm:max-w-[340px] md:max-w-[420px] lg:max-w-[320px]"
             >
-              <p className="text-[11px] sm:text-[12.5px] md:text-[13.5px] lg:text-[14px] font-sans leading-[1.6] text-muted font-normal">
+              <p className={`text-[11px] sm:text-[12.5px] md:text-[13.5px] lg:text-[14px] font-sans leading-[1.6] font-normal ${isFullBanner ? 'text-white/80' : 'text-muted'}`}>
                 {siteContent['hero_paragraph'] || "For brands, founders, agencies, and filmmakers looking to turn ideas into strong visual stories. From identity design and campaign art direction to AI visuals, product imagery, music videos, and cinematic storytelling - let’s build something remarkable."}
               </p>
             </motion.div>
