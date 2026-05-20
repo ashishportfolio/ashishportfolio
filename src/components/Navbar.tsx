@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { supabase } from '../lib/supabase';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,6 +21,36 @@ const NAV_LINKS = [
 export default function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop');
+
+  // Fetch avatar image dynamically from about content or site content
+  useEffect(() => {
+    async function fetchAvatar() {
+      try {
+        const { data: sData } = await supabase.from('site_content').select('*');
+        const { data: abData } = await supabase.from('about_content').select('*').maybeSingle();
+        
+        let url = '';
+        if (sData) {
+          const heroImg = sData.find((item: any) => item.key === 'hero_center_image');
+          if (heroImg && heroImg.value) {
+            url = heroImg.value;
+          }
+        }
+        
+        if (!url && abData && abData.image) {
+          url = abData.image;
+        }
+
+        if (url) {
+          setAvatarUrl(url);
+        }
+      } catch (err) {
+        console.error('Error fetching navigation avatar:', err);
+      }
+    }
+    fetchAvatar();
+  }, []);
 
   // Close menu on route change
   useEffect(() => {
@@ -40,6 +71,25 @@ export default function Navbar() {
       {/* Desktop Navigation - Hidden on Mobile/Tablet */}
       <nav className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] hidden lg:flex items-center bg-[#1a1a1a]/80 backdrop-blur-md px-2 py-2 rounded-2xl border border-white/5 shadow-lg">
         <div className="flex items-center">
+          {avatarUrl && (
+            <Link
+              to="/about"
+              className="mr-2 ml-1 shrink-0"
+            >
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-8 h-8 rounded-lg overflow-hidden border border-white/10"
+              >
+                <img
+                  src={avatarUrl}
+                  alt="Ashish Guptaa"
+                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300 pointer-events-none select-none"
+                  referrerPolicy="no-referrer"
+                />
+              </motion.div>
+            </Link>
+          )}
           {NAV_LINKS.map((link) => {
             const isActive = location.pathname === link.path;
             const isContact = link.name === 'Contact';

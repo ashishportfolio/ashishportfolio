@@ -6,7 +6,6 @@ import { isVideo } from '../lib/utils';
 
 interface ProjectCardProps {
   project: Project;
-  index: number;
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
@@ -46,14 +45,14 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className={`group relative w-full bg-[#f4f4f4] rounded-[24px] md:rounded-[36px] p-2 cursor-pointer mb-8 ${isHovered ? 'z-50' : 'z-auto'}`}
+      className={`group relative w-full bg-[#f4f4f4] rounded-[16px] md:rounded-[24px] p-2 cursor-pointer mb-8 ${isHovered ? 'z-50' : 'z-auto'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
       onClick={() => navigate(`/work/${project.slug}`)}
     >
       {/* Image/Video Container */}
-      <div className="relative aspect-[21/7] w-full overflow-hidden rounded-[18px] md:rounded-[28px] bg-slate-200">
+      <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[12px] md:rounded-[20px] bg-slate-200">
         {/* Base Layer: Image (or video if that's the primary content) */}
         {isVideo(project.image) ? (
           <video

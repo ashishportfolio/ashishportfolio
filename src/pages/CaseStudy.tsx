@@ -109,9 +109,9 @@ export default function CaseStudy() {
         </div>
 
         {/* Content Overlay */}
-        <div className="relative z-10 h-full w-full px-6 md:px-[8%] flex flex-col justify-end pb-12 md:pb-20">
+        <div className="relative z-10 h-full w-full px-6 md:px-[7.2%] flex flex-col justify-end pb-12 md:pb-20">
           {/* Top Metadata Tags */}
-          <div className="absolute top-12 left-6 right-6 md:left-[8%] md:right-[8%] flex flex-wrap items-center justify-between gap-4">
+          <div className="absolute top-12 left-6 right-6 md:left-[7.2%] md:right-[7.2%] flex flex-wrap items-center justify-between gap-4">
             <Reveal type="fade" className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-md border border-white/10 text-white">
               <span className="w-3.5 h-3.5 flex items-center justify-center bg-[#FF4D00] rounded-[2px]">
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v10z"/></svg>
@@ -158,7 +158,7 @@ export default function CaseStudy() {
 
       {/* 3. CASE STUDY CONTENT */}
       <section className="py-8 md:py-16 bg-white overflow-hidden">
-        <div className="px-6 md:px-[8%] space-y-10 md:space-y-24">
+        <div className="px-6 md:px-[7.2%] space-y-10 md:space-y-24">
           
           {/* Lead Intro / Overview - Tightened further */}
           {project.show_directive !== false && (

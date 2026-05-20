@@ -26,8 +26,10 @@ export default function CustomCursor() {
       });
     };
 
-    const handleHover = (e: any) => {
+    const handleHover = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      
+      // Handle project video hover
       const projectCard = target.closest('[data-project-video]');
       if (projectCard) {
         const video = projectCard.getAttribute('data-project-video');
@@ -36,6 +38,24 @@ export default function CustomCursor() {
       } else {
         setHoveredProject(null);
         setVideoSrc(null);
+      }
+
+      // Handle interactive element scaling
+      const interactive = target.closest('a, button, [role="button"], input, select, textarea');
+      if (interactive) {
+        gsap.to(cursor, {
+          scale: 3,
+          backgroundColor: 'white',
+          mixBlendMode: 'difference',
+          duration: 0.3
+        });
+      } else {
+        gsap.to(cursor, {
+          scale: 1,
+          backgroundColor: '#FF4D00',
+          mixBlendMode: 'normal',
+          duration: 0.3
+        });
       }
     };
 

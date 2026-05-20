@@ -1,10 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Oxygen:wght@300;400;700&display=swap');
 @import "tailwindcss";
 
+:root {
+  --theme-font-sans-family: "Oxygen";
+  --theme-font-display-family: "Syne";
+  --theme-primary: #FF4D00;
+  --theme-primary-hover: #E64200;
+}
+
 @theme {
-  --font-sans: "Oxygen", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Oxygen", serif; /* User wants body/para to be Oxygen, so we treat serif as Oxygen too if used */
-  --font-display: "Syne", sans-serif;
+  --font-sans: var(--theme-font-sans-family), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--theme-font-sans-family), serif; 
+  --font-display: var(--theme-font-display-family), sans-serif;
   
   --color-bg: #ffffff;
   --color-fg: #000000;
@@ -15,9 +22,51 @@
   --tracking-tighter: -0.03em;
 }
 
+/* Dynamic overrides for hardcoded Tailwind arbitrary primary orange elements */
+.text-\[\#FF4D00\] {
+  color: var(--theme-primary) !important;
+}
+.bg-\[\#FF4D00\] {
+  background-color: var(--theme-primary) !important;
+}
+.hover\:bg-\[\#FF4D00\]:hover {
+  background-color: var(--theme-primary) !important;
+}
+.border-\[\#FF4D00\] {
+  border-color: var(--theme-primary) !important;
+}
+.hover\:border-\[\#FF4D00\]:hover {
+  border-color: var(--theme-primary) !important;
+}
+.border-\[\#FF4D00\2f 20\] {
+  border-color: color-mix(in srgb, var(--theme-primary) 20%, transparent) !important;
+}
+.bg-\[\#FF4D00\2f 10\] {
+  background-color: color-mix(in srgb, var(--theme-primary) 10%, transparent) !important;
+}
+.group:hover .group-hover\:bg-\[\#FF4D00\] {
+  background-color: var(--theme-primary) !important;
+}
+.group:hover .group-hover\:border-\[\#FF4D00\] {
+  border-color: var(--theme-primary) !important;
+}
+.group:hover .group-hover\:bg-\[\#FF4D00\2f 10\] {
+  background-color: color-mix(in srgb, var(--theme-primary) 10%, transparent) !important;
+}
+.hover\:bg-\[\#E64200\]:hover {
+  background-color: var(--theme-primary-hover) !important;
+}
+
 @layer base {
   body {
     @apply bg-bg text-fg font-sans antialiased selection:bg-fg selection:text-bg text-[11px] md:text-sm leading-[1.6];
+  }
+
+  /* Hide default cursor on desktop where we have the custom one */
+  @media (min-width: 1024px) {
+    body, a, button, [role="button"], input, select, textarea {
+      cursor: none !important;
+    }
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -159,4 +208,13 @@
 
 .animate-glitch-cinematic {
   animation: cinematic-glitch 2s linear infinite;
+}
+
+/* Hide scrollbar classes */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

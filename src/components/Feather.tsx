@@ -73,8 +73,7 @@ export default function Feather() {
   return (
     <div 
       ref={featherRef}
-      className="fixed top-[18%] right-[10%] z-[200] pointer-events-none"
-      style={{ width: '50px', height: 'auto' }}
+      className="fixed top-[18%] right-[10%] z-[200] pointer-events-none w-[30px] sm:w-[50px]"
     >
       <svg 
         viewBox="0 0 146 441" 

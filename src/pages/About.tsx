@@ -35,45 +35,37 @@ export default function About() {
   }, []);
 
   return (
-    <div className="pt-24 lg:pt-32 pb-12 lg:pb-16 bg-bg overflow-x-hidden text-center lg:text-left">
-      <div className="w-full max-w-7xl mx-auto px-6 md:px-[8%] mb-16 lg:mb-24">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start">
+    <div className="pt-16 sm:pt-20 lg:pt-32 pb-8 sm:pb-12 lg:pb-16 bg-bg overflow-x-hidden text-center lg:text-left">
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-[7.2%] mb-10 sm:mb-16 lg:mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start">
           <div className="md:col-span-7 space-y-8 flex flex-col items-center lg:items-start">
             <Reveal type="fade">
               <span className="text-[9px] font-sans tracking-[0.3em] text-muted capitalize block">
                 {siteContent['about_title'] || "Art Director / Digital Designer"}
               </span>
             </Reveal>
-            <Reveal type="text" className="text-3xl md:text-[3.8vw] font-display font-medium leading-[1.1] tracking-tighter">
-              Ashish Guptaa <br />
-              <span className="text-base md:text-[1.2vw] block mt-4 opacity-50 font-sans tracking-normal font-normal normal-case">
-                Ex-Ogilvy Art Director | Brand Designer | AI Visual Storyteller
+            <Reveal type="text" className="text-2xl sm:text-3xl md:text-[3.8vw] font-display font-medium leading-[1.1] tracking-tighter">
+              {siteContent['about_hero_heading'] || "Ashish Guptaa"} <br />
+              <span className="text-sm md:text-[1.2vw] block mt-3 opacity-50 font-sans tracking-normal font-normal normal-case">
+                {siteContent['about_hero_sub_copy'] || "Ex-Ogilvy Art Director | Brand Designer | AI Visual Storyteller"}
               </span>
             </Reveal>
             <Reveal type="fade" delay={0.3}>
               <div className="max-w-xl text-[13px] md:text-sm text-muted space-y-5 text-pretty md:text-justify leading-relaxed">
                 <p>
-                  Ashish Guptaa is an Ex-Ogilvy Art Director, Brand Identity Designer, and AI Visual Storyteller
-                  from India, with 7+ years of professional experience and over 10 years of creative practice.
+                  {siteContent['about_para_1'] || "Ashish Guptaa is an Ex-Ogilvy Art Director, Brand Identity Designer, and AI Visual Storyteller from India, with 7+ years of professional experience and over 10 years of creative practice."}
                 </p>
                 <p>
-                  His work spans brand identity design, logo design, campaign art direction, key visual design, ad
-                  films, AI art direction, AI filmmaking, music videos, product photography, product visualisation,
-                  movie poster design, and music key art.
+                  {siteContent['about_para_2'] || "His work spans brand identity design, logo design, campaign art direction, key visual design, ad films, AI art direction, AI filmmaking, music videos, product photography, product visualisation, movie poster design, and music key art."}
                 </p>
                 <p>
-                  He has shaped work for brands like Coke, Cadbury, Skechers, Vaseline, Bajaj, Jio, and more —
-                  bringing together advertising thinking, design craft, cinematic composition, storytelling, and
-                  AI-led execution.
+                  {siteContent['about_para_3'] || "He has shaped work for brands like Coke, Cadbury, Skechers, Vaseline, Bajaj, Jio, and more — bringing together advertising thinking, design craft, cinematic composition, storytelling, and AI-led execution."}
                 </p>
                 <p>
-                  From brand identities and logo systems to campaign visuals, film posters, music key art, AI
-                  product shoots, and visual storytelling, his work is built with thought, clarity, emotion, and a
-                  strong point of view.
+                  {siteContent['about_para_4'] || "From brand identities and logo systems to campaign visuals, film posters, music key art, AI product shoots, and visual storytelling, his work is built with thought, clarity, emotion, and a strong point of view."}
                 </p>
                 <p>
-                  For every thought, brief, brand, film, product, or music project that needs to be shaped into a
-                  story, this is where it finds its visual direction.
+                  {siteContent['about_para_5'] || "For every thought, brief, brand, film, product, or music project that needs to be shaped into a story, this is where it finds its visual direction."}
                 </p>
               </div>
             </Reveal>
@@ -102,14 +94,14 @@ export default function About() {
       <ProcessSection />
 
       {/* Clients */}
-      <section className="mt-12 lg:mt-16 pt-12 lg:pt-16 border-t border-border bg-bg">
-        <div className="max-w-7xl mx-auto px-6 md:px-[8%]">
-          <div className="w-full mb-10">
-            <Reveal type="glitch" className="text-[10px] uppercase tracking-[0.5em] font-bold">Trusted Partners ({logos.length.toString().padStart(2, '0')})</Reveal>
+      <section className="mt-8 lg:mt-16 pt-8 lg:pt-16 border-t border-border bg-bg">
+        <div className="max-w-7xl mx-auto px-6 md:px-[7.2%]">
+          <div className="w-full mb-6 md:mb-10">
+            <Reveal type="glitch" className="text-[10px] uppercase tracking-[0.5em] font-bold">Trusted Partners</Reveal>
           </div>
           
           {logos.length > 0 ? (
-            <div className="flex whitespace-nowrap overflow-hidden group border-y border-border/10 py-16">
+            <div className="flex whitespace-nowrap overflow-hidden group border-y border-border/10 py-8 sm:py-12 lg:py-16">
               <div className="flex animate-marquee shrink-0 items-center">
                 {[...logos, ...logos, ...logos, ...logos].map((logo, i) => (
                   <div key={`${logo.id}-${i}`} className="flex items-center mx-24 justify-center">
@@ -138,21 +130,22 @@ export default function About() {
       </section>
 
         {/* Let's build something collective section */}
-        <section className="relative z-10 py-12 lg:py-16 bg-bg text-fg overflow-hidden border-t border-border mt-16 lg:mt-24">
-          <div className="max-w-7xl mx-auto px-6 md:px-[8%] relative z-10 flex flex-col items-center text-center">
-            <Reveal multiplier={1.5} type="fade" className="block mb-6">
-              <span className="text-[10px] font-sans font-bold tracking-[0.2em] text-muted capitalize">Let's build something collective</span>
+        <section className="relative z-10 py-10 md:py-12 lg:py-16 bg-bg text-fg overflow-hidden border-t border-border mt-10 md:mt-16 lg:mt-24">
+          <div className="max-w-7xl mx-auto px-6 md:px-[7.2%] relative z-10 flex flex-col items-center text-center">
+            <Reveal multiplier={1.5} type="fade" className="block mb-4 md:mb-6">
+              <span className="text-[10px] font-sans font-bold tracking-[0.2em] text-muted capitalize">
+                {siteContent['about_cta_label'] || "Let's build something collective"}
+              </span>
             </Reveal>
             
-            <Reveal multiplier={1.5} type="text" delay={0.2} className="mb-10 lg:mb-12">
-              <h2 className="text-3xl md:text-[4.5vw] font-display font-medium tracking-tighter leading-[1.1] mb-4">
-                Have a perspective? <br />
-                Let's make it real.
+            <Reveal multiplier={1.5} type="text" delay={0.2} className="mb-6 md:mb-10 lg:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-[4.5vw] font-display font-medium tracking-tighter leading-[1.1] mb-4 whitespace-pre-line">
+                {siteContent['about_cta_heading'] || "Have a perspective? \nLet's make it real."}
               </h2>
             </Reveal>
             
-            <Reveal multiplier={1.5} type="fade" delay={0.3} className="mb-12">
-              <div className="flex flex-wrap justify-center gap-x-12 gap-y-6">
+            <Reveal multiplier={1.5} type="fade" delay={0.3} className="mb-6 md:mb-12">
+              <div className="flex flex-wrap justify-center gap-x-8 md:gap-x-12 gap-y-4 md:gap-y-6">
                 <a 
                   href={`mailto:${siteContent['contact_email'] || 'hello@ashishguptaa.com'}`}
                   className="flex items-center gap-3 text-sm md:text-base font-sans font-medium hover:opacity-60 transition-opacity border-b border-fg/20 pb-1"

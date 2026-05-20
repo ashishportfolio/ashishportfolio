@@ -55,6 +55,9 @@ export interface AboutContent {
   profile_desc_1?: string;
   profile_subtitle_2?: string;
   profile_desc_2?: string;
+  profile_headline?: string;
+  contact_bg?: string;
+  work_hero_bg?: string;
 }
 
 export interface ClientLogo {

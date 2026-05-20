@@ -27,26 +27,41 @@ app.post("/api/send-email", async (req, res) => {
     let html = "";
 
     if (type === "contact") {
-      subject = `New Contact Inquiry: ${data.subject}`;
+      const name = data?.name || "Anonymous";
+      const senderEmail = data?.email || "no-reply@example.com";
+      const inputSubject = data?.subject || "General Inquiry";
+      const message = data?.message || "No message provided";
+
+      subject = `New Contact Inquiry: ${inputSubject}`;
       html = `
         <h1>New Contact Inquiry</h1>
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Project Type:</strong> ${data.subject}</p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${senderEmail}</p>
+        <p><strong>Project Type:</strong> ${inputSubject}</p>
         <p><strong>Message:</strong></p>
-        <p>${data.message}</p>
+        <p>${message}</p>
       `;
     } else if (type === "booking") {
-      subject = `New Booking Request: ${data.name}`;
+      const name = data?.name || "Anonymous";
+      const senderEmail = data?.email || "no-reply@example.com";
+      const phone = data?.phone || "N/A";
+      const date = data?.date || "N/A";
+      const time_slot = data?.time_slot || "N/A";
+      const message = data?.message || "No message provided";
+
+      subject = `New Booking Request: ${name}`;
       html = `
         <h1>New Booking Request</h1>
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Phone:</strong> ${data.phone}</p>
-        <p><strong>Date:</strong> ${data.date}</p>
-        <p><strong>Time:</strong> ${data.time_slot} IST</p>
-        <p><strong>Message:</strong> ${data.message || "No message provided"}</p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${senderEmail}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Time:</strong> ${time_slot} IST</p>
+        <p><strong>Message:</strong> ${message}</p>
       `;
+    } else {
+      console.warn(`DEBUG: Invalid or unsupported email type: ${type}`);
+      return res.status(400).json({ error: `Unsupported email type: ${type}` });
     }
 
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'Portfolio <onboarding@resend.dev>';
@@ -60,7 +75,30 @@ app.post("/api/send-email", async (req, res) => {
 
     if (result.error) {
       console.error("DEBUG: Resend API returned an error:", result.error);
-      return res.status(500).json({ error: result.error.message });
+      
+      // Provide a helpful developer configuration guide for validation_errors (typical for sandbox/domain issues)
+      if (result.error.name === "validation_error") {
+        console.warn("\n========================================================================\n" +
+                     "💡 DIAGNOSTIC INFO FOR RESEND VALIDATION ERROR:\n" +
+                     "------------------------------------------------------------------------\n" +
+                     `1. Your From Email is currently: "${fromEmail}"\n` +
+                     `2. Your Recipient Email is currently: "${recipient}"\n\n` +
+                     "WHY THIS ERROR OCCURS:\n" +
+                     "• Sandbox Mode Limits: In Resend free/sandbox mode (using 'onboarding@resend.dev'),\n" +
+                     "  you can ONLY send emails to the email address used to register your Resend account.\n" +
+                     "  Sending to any other recipient (e.g. 'imguptashish@gmail.com') will reject with a validation_error.\n" +
+                     "• Custom Domain Key: If you are using a production Resend API Key, you cannot use\n" +
+                     "  'onboarding@resend.dev' as the from address. You must use your verified domain.\n\n" +
+                     "HOW TO FIX THIS:\n" +
+                     "• Set NOTIFICATION_EMAIL in your environment variables to match your verified Resend account email.\n" +
+                     "• Verify your custom domain in Resend and set RESEND_FROM_EMAIL to use your verified domain.\n" +
+                     "========================================================================\n");
+      }
+      return res.status(400).json({ 
+        error: result.error.message,
+        name: result.error.name,
+        suggestion: "Please configure NOTIFICATION_EMAIL and RESEND_FROM_EMAIL environment variables to match your verified Resend domain and account email."
+      });
     }
 
     console.log(`DEBUG: Email sent successfully! ID: ${result.data?.id}`);

@@ -6,7 +6,9 @@ import {
   Compass, 
   Palette, 
   FileCheck, 
-  Send 
+  Send,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 import Reveal from './Reveal';
 
@@ -54,63 +56,97 @@ interface ProcessSectionProps {
 }
 
 export default function ProcessSection({ disablePadding = false }: ProcessSectionProps) {
-  return (
-    <section className={`py-14 lg:py-20 ${disablePadding ? '' : 'px-6 md:px-[8%]'} bg-bg border-y border-border/50`}>
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-16 lg:mb-24">
-          <Reveal type="text" className="text-3xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-tight mb-6">
-            How the Work Takes Shape
-          </Reveal>
-          <Reveal type="fade" delay={0.2}>
-            <p className="text-sm md:text-base text-muted font-sans font-normal max-w-2xl leading-relaxed">
-              Every project moves from thought to story, from story to direction, and from direction to a visual system that can live across real brand touchpoints.
-            </p>
-          </Reveal>
-        </div>
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 lg:gap-y-20">
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = scrollContainerRef.current.clientWidth * 0.78;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  return (
+    <section className={`relative z-10 py-10 md:py-14 lg:py-20 ${disablePadding ? '' : 'px-6 md:px-[7.2%]'} bg-[#F5F5F5] overflow-hidden border-b border-border`}>
+      {/* Top bar logic */}
+      <div className="max-w-[1400px] mx-auto mb-16 flex justify-between items-center text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-[#999]">
+        <div className="flex items-center gap-3">
+           <div className="w-2.5 h-2.5 bg-[#FF3333] rounded-sm" />
+           <span>Approach Style</span>
+        </div>
+        <div className="hidden md:block text-fg opacity-60">
+           (CQ® — 02)
+         </div>
+        <div className="opacity-60 font-sans">
+           ©{new Date().getFullYear()}
+        </div>
+      </div>
+
+      <div 
+        ref={scrollContainerRef}
+        className={`max-w-[1400px] mx-auto overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth ${disablePadding ? '' : '-mx-6 px-6 md:-mx-[7.2%] md:px-[7.2%] lg:mx-0 lg:px-0'}`}
+      >
+        <div className="flex lg:grid lg:grid-cols-3 gap-6 pb-6 lg:pb-0 snap-x snap-mandatory">
           {PROCESS_STEPS.map((step, index) => (
-            <motion.div 
+            <div 
               key={step.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="flex flex-col group"
+              className="w-[76vw] sm:w-[45vw] md:w-[38vw] lg:w-auto shrink-0 snap-start"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <motion.div 
-                    animate={{ 
-                      rotateY: [0, 360],
-                      y: [0, -4, 0] 
-                    }}
-                    transition={{ 
-                      rotateY: { duration: 8, repeat: Infinity, ease: "linear" },
-                      y: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-                    }}
-                    style={{ perspective: 1000 }}
-                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center group-hover:border-white/40 transition-colors duration-500 overflow-hidden relative"
-                  >
-                    <step.icon className="w-4 h-4 text-fg group-hover:scale-110 transition-transform duration-500" />
-                    <motion.div 
-                      className="absolute inset-x-0 bottom-0 h-[1px] bg-white opacity-20"
-                      initial={{ scaleX: 0 }}
-                      whileHover={{ scaleX: 1 }}
-                    />
-                  </motion.div>
+              <Reveal multiplier={1.5} type="fade" delay={index * 0.1}>
+                <div className="group bg-[#EAEAEA] hover:bg-white transition-all duration-500 rounded-[12px] md:rounded-[20px] p-8 md:p-10 h-full border border-border/10 flex flex-col justify-between cursor-default min-h-[320px] md:min-h-[400px]">
+                  <div>
+                    <div className="flex justify-between items-start mb-16 md:mb-24">
+                       <span className="text-[24px] md:text-[32px] font-display font-medium text-fg">{step.number}</span>
+                       
+                       {/* Progress Dots */}
+                       <div className="flex gap-1.5 pt-2">
+                          {[...Array(3)].map((_, dotIdx) => (
+                            <div 
+                              key={dotIdx} 
+                              className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${dotIdx <= (index % 3) ? 'bg-[#FF3333]' : 'bg-border/40 group-hover:bg-border'}`} 
+                            />
+                          ))}
+                       </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                       <div className="flex items-center gap-3">
+                          <div className="w-2.5 h-2.5 bg-[#FF3333] rounded-sm" />
+                          <h3 className="text-[12px] md:text-[14px] font-bold text-fg tracking-tight uppercase">{step.title}</h3>
+                       </div>
+                      
+                       <p className="text-[12px] md:text-[14px] text-muted leading-relaxed font-sans font-normal opacity-80 group-hover:opacity-100 transition-opacity">
+                        {step.description}
+                       </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              
-              <h4 className="text-lg md:text-xl font-display font-medium tracking-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">
-                {step.title}
-              </h4>
-              <p className="text-xs md:text-sm text-muted/80 leading-relaxed font-sans font-normal">
-                {step.description}
-              </p>
-            </motion.div>
+              </Reveal>
+            </div>
           ))}
         </div>
+      </div>
+
+      {/* Scroll Navigation Arrows for mobile/tablet */}
+      <div className="flex lg:hidden justify-center items-center gap-4 mt-6">
+        <button 
+          onClick={() => handleScroll('left')}
+          className="w-10 h-10 rounded-full border border-border bg-white flex items-center justify-center text-fg hover:bg-neutral-50 active:scale-95 transition-all outline-none"
+          style={{ cursor: 'pointer' }}
+          aria-label="Scroll left"
+        >
+          <ArrowLeft size={16} />
+        </button>
+        <button 
+          onClick={() => handleScroll('right')}
+          className="w-10 h-10 rounded-full border border-border bg-white flex items-center justify-center text-fg hover:bg-neutral-50 active:scale-95 transition-all outline-none"
+          style={{ cursor: 'pointer' }}
+          aria-label="Scroll right"
+        >
+          <ArrowRight size={16} />
+        </button>
       </div>
     </section>
   );

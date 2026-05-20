@@ -104,18 +104,20 @@ export default function Services() {
       <div className="absolute top-0 left-[-20%] w-[80%] h-[100vh] bg-[#f8f8f8] rounded-full blur-[120px] -z-10 pointer-events-none" />
       
       {/* Header */}
-      <section className="pt-10 md:pt-14 lg:pt-20 pb-8 md:pb-10 lg:pb-14 px-6 md:px-[8%] mx-auto">
-        <div className="flex flex-col gap-8 md:gap-10 lg:gap-12">
+      <section className="pt-8 sm:pt-12 lg:pt-20 pb-6 sm:pb-8 lg:pb-14 px-6 md:px-[7.2%] mx-auto">
+        <div className="flex flex-col gap-6 md:gap-10 lg:gap-12">
           {/* Label with red dot */}
           <Reveal type="fade">
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 bg-[#FF4D00] rounded-sm" />
-              <span className="text-[9px] font-bold capitalize tracking-[0.1em] text-fg/60">Building with Passion</span>
+              <span className="text-[9px] font-bold capitalize tracking-[0.1em] text-fg/60">
+                {siteContent['services_label'] || "Building with Passion"}
+              </span>
             </div>
           </Reveal>
           {/* Main Heading */}
           <Reveal type="text" className="text-2xl md:text-[3.8vw] font-display font-medium tracking-tighter leading-[1.1]">
-            Visual work built with story, strategy, craft, and art direction - made for brands, campaigns, films, products, music, and AI-led storytelling.
+            {siteContent['services_heading'] || "Visual work built with story, strategy, craft, and art direction - made for brands, campaigns, films, products, music, and AI-led storytelling."}
           </Reveal>
 
           {/* Call to action button matching mockup */}
@@ -126,11 +128,18 @@ export default function Services() {
       </section>
 
       {/* Services List Table Design */}
-      <section className="px-6 md:px-[8%] mx-auto">
+      <section className="px-6 md:px-[7.2%] mx-auto">
         <div className="flex flex-col">
           {SERVICES.map((service, idx) => {
             const imageKey = IMAGE_KEYS[service.title] || 'service_image_default';
             const imageUrl = siteContent[imageKey] || DEFAULT_IMAGES[service.title] || "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=800&auto=format&fit=crop";
+            
+            const title = siteContent[`service_${idx}_title`] || service.title;
+            const description = siteContent[`service_${idx}_description`] || service.description;
+            const rawItems = siteContent[`service_${idx}_items`];
+            const items = rawItems 
+              ? rawItems.split(',').map(item => item.trim()).filter(Boolean) 
+              : service.items;
             
             return (
               <motion.div 
@@ -139,12 +148,12 @@ export default function Services() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 1, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="grid grid-cols-1 md:grid-cols-12 py-8 md:py-10 lg:py-14 border-t border-border group"
+                className="grid grid-cols-1 md:grid-cols-12 py-6 sm:py-8 lg:py-14 border-t border-border group"
               >
                 {/* Category Name & Image Column */}
-                <div className="md:col-span-4 mb-6 md:mb-0 space-y-4 md:space-y-6">
-                  <h3 className="text-xl md:text-2xl font-display font-medium tracking-tight capitalize">
-                    {service.title}
+                <div className="md:col-span-4 mb-4 md:mb-0 space-y-2 md:space-y-6">
+                  <h3 className="text-base sm:text-xl md:text-2xl font-display font-medium tracking-tight capitalize">
+                    {title}
                   </h3>
                   
                   {/* Small relevant image with reveal animation */}
@@ -157,7 +166,7 @@ export default function Services() {
                   >
                     <motion.img 
                       src={imageUrl} 
-                      alt={service.title}
+                      alt={title}
                       className="w-full h-full object-cover"
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6 }}
@@ -165,14 +174,14 @@ export default function Services() {
                     />
                   </motion.div>
                 </div>
-
+ 
                 {/* Service Items List */}
                 <div className="md:col-span-8 pr-0 md:pr-12 md:pt-1">
-                  <p className="text-xs md:text-sm font-sans text-fg/60 leading-relaxed mb-6 max-w-2xl">
-                    {service.description}
+                  <p className="text-xs md:text-sm font-sans text-fg/60 leading-relaxed mb-4 md:mb-6 max-w-2xl">
+                    {description}
                   </p>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-10">
-                    {service.items.map((item, i) => (
+                    {items.map((item, i) => (
                       <motion.li 
                         key={i} 
                         className="flex items-start gap-3"
@@ -197,12 +206,14 @@ export default function Services() {
       </section>
 
       {/* Footer text/CTA area */}
-      <section className="mt-24 px-6 md:px-[8%] mx-auto text-center flex flex-col items-center">
-        <Reveal type="fade" className="mb-6">
-          <span className="text-[9px] font-bold text-fg/40 capitalize tracking-[0.3em]">Let's collaborate</span>
+      <section className="mt-12 sm:mt-16 lg:mt-24 px-6 md:px-[7.2%] mx-auto text-center flex flex-col items-center">
+        <Reveal type="fade" className="mb-4 md:mb-6">
+          <span className="text-[9px] font-bold text-fg/40 capitalize tracking-[0.3em]">
+            {siteContent['services_footer_label'] || "Let's collaborate"}
+          </span>
         </Reveal>
-        <Reveal type="text" className="text-2xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-[1.1] mb-10">
-          Ready to elevate your identity and digital presence?
+        <Reveal type="text" className="text-xl sm:text-2xl md:text-[3.5vw] font-display font-medium tracking-tighter leading-[1.1] mb-6 md:mb-10">
+          {siteContent['services_footer_heading'] || "Ready to elevate your identity and digital presence?"}
         </Reveal>
         <Reveal type="fade" delay={0.4}>
           <Button onClick={openBookingModal}>Book A Call</Button>
